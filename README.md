@@ -1,6 +1,6 @@
 # Gym Plan – Ganzkörper-Trainings-App fürs iPhone
 
-Web-App (PWA) für 2× Ganzkörpertraining pro Woche (~60 Min.), abgestimmt auf McFit-Geräte – nur Freihanteln (Lang-/Kurzhantel, SZ-Stange) und geführte Maschinen.
+Web-App (PWA) für 2× Ganzkörpertraining pro Woche (~60 Min.), abgestimmt auf McFit-Geräte – Freihanteln (Lang-/Kurzhantel, SZ-Stange), geführte Maschinen und Kabelzug.
 Läuft im Safari, lässt sich auf den Home-Bildschirm legen und funktioniert offline.
 
 ## Funktionen

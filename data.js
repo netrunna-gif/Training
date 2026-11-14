@@ -1,11 +1,12 @@
-// Übungsbibliothek – nur Freihanteln (Langhantel, Kurzhantel, SZ-Stange)
-// und geführte Maschinen (Steckgewicht-/Scheibenmaschinen, Multipresse), wie bei McFit vorhanden.
+// Übungsbibliothek – Freihanteln (Langhantel, Kurzhantel, SZ-Stange), geführte Maschinen
+// (Steckgewicht-/Scheibenmaschinen, Multipresse) und Kabelzug, wie bei McFit vorhanden.
+// Keine reinen Körpergewichtsübungen.
 //
 // reps:  Wiederholungsbereich [min, max] für die doppelte Progression
 // inc:   Gewichtssprung in kg, wenn alle Sätze das obere Ende erreichen
 //        (negativ = Unterstützungsmaschine: weniger kg ist schwerer)
 // start: Vorschlag für das erste Training (kg) – passt du beim ersten Mal ohnehin an
-// type:  'free' = Freihantel, 'machine' = geführte Maschine
+// type:  'free' = Freihantel, 'machine' = geführte Maschine, 'cable' = Kabelzug
 
 const EXERCISES = {
   // ---------- Beine: Kniebeuge-Muster ----------
@@ -120,15 +121,29 @@ const EXERCISES = {
   calf_seated: { name: 'Wadenmaschine sitzend', type: 'machine', sets: 3, reps: [12, 15], inc: 5, start: 20, unit: 'Wdh',
                  tip: 'Volle Bewegung, oben kurz halten.' },
 
+  // ---------- Kabelzug ----------
+  latpull:      { name: 'Latzug breit (Kabel)', type: 'cable', sets: 3, reps: [8, 12], inc: 5, start: 35, unit: 'Wdh',
+                  tip: 'Zur oberen Brust ziehen, Brust raus, nicht mit Schwung arbeiten.' },
+  latpull_cg:   { name: 'Latzug eng / Untergriff (Kabel)', type: 'cable', sets: 3, reps: [8, 12], inc: 5, start: 35, unit: 'Wdh',
+                  tip: 'Ellbogen nah am Körper nach unten ziehen.' },
+  row_cable:    { name: 'Rudern am Kabel sitzend', type: 'cable', sets: 3, reps: [8, 12], inc: 5, start: 35, unit: 'Wdh',
+                  tip: 'Aufrecht sitzen, Schulterblätter zuerst zusammenziehen, nicht nach hinten lehnen.' },
+  lateral_cable:{ name: 'Seitheben am Kabel', type: 'cable', sets: 3, reps: [12, 15], inc: 2.5, start: 5, unit: 'Wdh',
+                  tip: 'Wdh. pro Seite. Einarmig, Kabel hinter dem Körper führen.' },
+  facepull:     { name: 'Face Pulls (Kabel)', type: 'cable', sets: 3, reps: [12, 15], inc: 2.5, start: 15, unit: 'Wdh',
+                  tip: 'Seil zur Stirn ziehen, Ellbogen hoch – gut für die Schultergesundheit.' },
+  curl_cable:   { name: 'Bizeps-Curls am Kabel', type: 'cable', sets: 2, reps: [10, 15], inc: 2.5, start: 15, unit: 'Wdh',
+                  tip: 'Gerade Stange oder Seil, Ellbogen fixiert, oben kurz anspannen.' },
+  pushdown:     { name: 'Trizepsdrücken am Kabel', type: 'cable', sets: 2, reps: [10, 15], inc: 2.5, start: 20, unit: 'Wdh',
+                  tip: 'Ellbogen am Körper fixiert, unten komplett strecken.' },
+  overhead_tri: { name: 'Trizeps Überkopf (Kabel/Seil)', type: 'cable', sets: 2, reps: [10, 15], inc: 2.5, start: 15, unit: 'Wdh',
+                  tip: 'Mit dem Rücken zum Kabel, Ellbogen zeigen nach vorne-oben.' },
+  cable_crunch: { name: 'Kabel-Crunch (kniend)', type: 'cable', sets: 3, reps: [10, 15], inc: 5, start: 20, unit: 'Wdh',
+                  tip: 'Seil neben dem Kopf, Wirbelsäule einrollen – die Hüfte bleibt still.' },
+  pullthrough:  { name: 'Pull-Through (Kabel)', type: 'cable', sets: 3, reps: [10, 15], inc: 5, start: 20, unit: 'Wdh',
+                  tip: 'Rücken zum Kabel, Seil zwischen den Beinen, Hüfte nach hinten schieben und Po anspannen.' },
+
   // ---------- Nicht mehr im Plan (nur für alte Verlaufseinträge) ----------
-  latpull:      { legacy: true, name: 'Latzug breit (Kabel)', sets: 3, reps: [8, 12], inc: 5, start: 35, unit: 'Wdh', tip: '' },
-  latpull_cg:   { legacy: true, name: 'Latzug eng (Kabel)', sets: 3, reps: [8, 12], inc: 5, start: 35, unit: 'Wdh', tip: '' },
-  row_cable:    { legacy: true, name: 'Rudern am Kabel sitzend', sets: 3, reps: [8, 12], inc: 5, start: 35, unit: 'Wdh', tip: '' },
-  lateral_cable:{ legacy: true, name: 'Seitheben am Kabel', sets: 3, reps: [12, 15], inc: 2.5, start: 5, unit: 'Wdh', tip: '' },
-  facepull:     { legacy: true, name: 'Face Pulls (Kabel)', sets: 3, reps: [12, 15], inc: 2.5, start: 15, unit: 'Wdh', tip: '' },
-  curl_cable:   { legacy: true, name: 'Bizeps-Curls am Kabel', sets: 2, reps: [10, 15], inc: 2.5, start: 15, unit: 'Wdh', tip: '' },
-  pushdown:     { legacy: true, name: 'Trizepsdrücken am Kabel', sets: 2, reps: [10, 15], inc: 2.5, start: 20, unit: 'Wdh', tip: '' },
-  overhead_tri: { legacy: true, name: 'Trizeps Überkopf (Kabel)', sets: 2, reps: [10, 15], inc: 2.5, start: 15, unit: 'Wdh', tip: '' },
   dips_ass:     { legacy: true, name: 'Dips (assistiert)', sets: 2, reps: [8, 12], inc: -5, start: 40, unit: 'Wdh', tip: '' },
   plank:        { legacy: true, name: 'Plank', sets: 3, reps: [30, 60], inc: 0, start: 0, unit: 'Sek', tip: '' },
   kneeraise:    { legacy: true, name: 'Knieheben hängend', sets: 3, reps: [10, 15], inc: 0, start: 0, unit: 'Wdh', tip: '' },
@@ -148,11 +163,11 @@ const WORKOUTS = {
     slots: [
       { id: 'A1', label: 'Beine – Kniebeuge', main: true, shift: 0, options: ['legpress', 'squat_smith', 'hack_squat', 'goblet', 'squat_bb'] },
       { id: 'A2', label: 'Brust – Drücken',   main: true, shift: 2, options: ['chestpress', 'bench_bb', 'incline_db', 'bench_db', 'incline_smith'] },
-      { id: 'A3', label: 'Rücken – Ziehen von oben', main: true, shift: 1, options: ['latpull_m', 'pullup_ass', 'pullover_m'] },
+      { id: 'A3', label: 'Rücken – Ziehen von oben', main: true, shift: 1, options: ['latpull_m', 'latpull', 'pullup_ass', 'latpull_cg', 'pullover_m'] },
       { id: 'A4', label: 'Beinbeuger',        options: ['legcurl_ly', 'legcurl_sit'] },
-      { id: 'A5', label: 'Schultern seitlich', options: ['lateral_db', 'lateral_m'] },
-      { id: 'A6', label: 'Trizeps',           options: ['tri_m', 'skull_sz', 'oh_tri_db'] },
-      { id: 'A7', label: 'Bauch',             options: ['crunch_m', 'torso_m'] },
+      { id: 'A5', label: 'Schultern seitlich', options: ['lateral_db', 'lateral_cable', 'lateral_m'] },
+      { id: 'A6', label: 'Trizeps',           options: ['tri_m', 'pushdown', 'skull_sz', 'overhead_tri', 'oh_tri_db'] },
+      { id: 'A7', label: 'Bauch',             options: ['crunch_m', 'cable_crunch', 'torso_m'] },
     ],
   },
   B: {
@@ -161,11 +176,11 @@ const WORKOUTS = {
     slots: [
       { id: 'B1', label: 'Beine – Hüftstreckung', main: true, shift: 1, options: ['rdl_bb', 'hipthrust', 'rdl_db', 'deadlift'] },
       { id: 'B2', label: 'Schultern – Drücken', main: true, shift: 3, options: ['shoulderpress', 'ohp_db', 'ohp_smith', 'ohp_bb'] },
-      { id: 'B3', label: 'Rücken – Rudern',   main: true, shift: 0, options: ['row_machine', 'row_db', 'tbar', 'row_bb'] },
+      { id: 'B3', label: 'Rücken – Rudern',   main: true, shift: 0, options: ['row_machine', 'row_cable', 'row_db', 'tbar', 'row_bb'] },
       { id: 'B4', label: 'Beine – Oberschenkel vorne', options: ['legext', 'lunge_db', 'bulgarian'] },
-      { id: 'B5', label: 'Hintere Schulter',  options: ['reverse_fly', 'rear_db'] },
-      { id: 'B6', label: 'Bizeps',            options: ['curl_db', 'curl_m', 'curl_sz', 'hammer'] },
-      { id: 'B7', label: 'Waden / unterer Rücken', options: ['calf_m', 'backext_m', 'calf_seated'] },
+      { id: 'B5', label: 'Hintere Schulter',  options: ['reverse_fly', 'facepull', 'rear_db'] },
+      { id: 'B6', label: 'Bizeps',            options: ['curl_db', 'curl_cable', 'curl_m', 'curl_sz', 'hammer'] },
+      { id: 'B7', label: 'Waden / unterer Rücken', options: ['calf_m', 'backext_m', 'calf_seated', 'pullthrough'] },
     ],
   },
 };

@@ -323,7 +323,7 @@ function viewPlan() {
       + feat(ICON.up, 'green', 'Automatisch schwerer', 'Schaffst du in allen Sätzen das obere Ende des Wiederholungsbereichs, steigt das Gewicht. Sonst ist das Ziel +1 Wiederholung.')
       + feat(ICON.down, 'red', 'Deload', 'Zweimal hintereinander unter dem Bereich → ca. 10 % leichter und neu aufbauen.')
       + feat(ICON.sparkle, 'orange', 'Jede Woche Abwechslung', `Ergänzungsübungen wechseln wöchentlich, Grundübungen alle ${state.settings.mainEvery} Wochen. Kommt eine Übung zurück, startet sie bei deinem letzten Gewicht.`)
-      + feat(ICON.info, 'blue', 'Nur Freihantel & Maschinen', 'Alle Übungen nutzen Lang-/Kurzhanteln, SZ-Stange oder geführte Maschinen – kein Kabelzug, kein reines Körpergewicht.')
+      + feat(ICON.info, 'blue', 'Freihantel, Maschinen & Kabelzug', 'Alle Übungen nutzen Lang-/Kurzhanteln, SZ-Stange, geführte Maschinen oder den Kabelzug – keine reinen Körpergewichtsübungen.')
       + feat(ICON.trend, 'purple', 'Plateau-Erkennung', '3 Einheiten ohne Bestwert → die App schlägt einen Tausch vor.')));
 }
 
