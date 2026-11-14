@@ -3,6 +3,12 @@
 Web-App (PWA) für 2× Ganzkörpertraining pro Woche (~60 Min.), abgestimmt auf McFit-Geräte – Freihanteln (Lang-/Kurzhantel, SZ-Stange), geführte Maschinen und Kabelzug.
 Läuft im Safari, lässt sich auf den Home-Bildschirm legen und funktioniert offline.
 
+## Trainingsprinzipien
+Inspiriert von evidenzbasierten Coaches (Jeff Nippard, Brad Schoenfeld, Mike Israetel):
+jeder Muskel 2× pro Woche, ca. 6–10 harte Sätze pro Muskel und Woche, Sätze nahe am Muskelversagen,
+Übungen mit Dehnung unter Last (Beinbeuger sitzend, Trizeps über Kopf, Schrägbank-Curls, RDL),
+längere Pausen bei Grundübungen und ein optionaler Cardio-Finisher.
+
 ## Funktionen
 - **Zwei Pläne A/B** im Wechsel – Ganzkörper, aber unterschiedliche Bewegungsmuster und Übungen
 - **Satz-Tracking** mit Gewicht/Wiederholungen, Pausen-Timer (mit Ton), Technik-Tipps
@@ -10,6 +16,8 @@ Läuft im Safari, lässt sich auf den Home-Bildschirm legen und funktioniert off
 - **Jede Woche Abwechslung**: Ergänzungsübungen wechseln wöchentlich, Grundübungen versetzt alle 4 Wochen (einstellbar); Gewichte bleiben je Übung gespeichert
 - **Plateau-Erkennung** und Übungstausch (nur heute oder bis zum nächsten Wechsel, z. B. wenn ein Gerät besetzt ist)
 - **Fortschritt**: Diagramme (geschätztes 1RM), Sätze pro Woche, Körpergewicht, Bestleistungen
+- **Übungen ausblenden**, die du nicht magst oder die dein Studio nicht hat (Plan → Varianten)
+- **Cardio-Finisher** (optional, ~10 Min.) und Aufwärmsätze für die erste Übung
 - **Backup** als JSON exportieren/importieren (Daten liegen lokal auf dem iPhone)
 
 ## Aufs iPhone bringen

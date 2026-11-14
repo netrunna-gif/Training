@@ -20,6 +20,8 @@ const ICON = {
   share: svg('<path d="M12 15V3.5M8 7.5l4-4 4 4M6.5 11H5.5v9.5h13V11h-1"/>'),
   doc: svg('<path d="M6 3.5h8l4 4v13H6z"/><path d="M14 3.5v4h4M12 11v6M9 14l3 3 3-3"/>'),
   trophy: svg('<path d="M8 4.5h8v5a4 4 0 0 1-8 0zM8 6.5H5v1.5a3 3 0 0 0 3 3M16 6.5h3v1.5a3 3 0 0 1-3 3M12 13.5V17M8.5 20h7M9.5 17h5v3h-5z"/>'),
+  heart: svg('<path d="M12 20s-7.5-4.4-7.5-10A4.3 4.3 0 0 1 12 7.4 4.3 4.3 0 0 1 19.5 10c0 5.6-7.5 10-7.5 10z"/>'),
+  eyeoff: svg('<path d="M3.5 3.5l17 17M10.6 6.1A9.6 9.6 0 0 1 12 6c5.5 0 9 6 9 6a15 15 0 0 1-2.7 3.4M6.6 6.7C4.2 8.2 3 12 3 12s3.5 6 9 6a8.6 8.6 0 0 0 4-.9M9.9 9.9a3 3 0 0 0 4.2 4.2"/>'),
   clock: svg('<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>'),
 };
 
@@ -122,9 +124,12 @@ function viewHome() {
       <div class="value"><div>${wt}</div><div class="sub">${e.sets} × ${e.reps[0]}–${e.reps[1]}</div></div></div>`;
   }).join('');
   const other = w === 'A' ? 'B' : 'A';
+  const cardio = cardioFor(state.sessions.length);
+  const cardioRow = `<div class="cell"><span class="cell-icon tint-red">${ICON.heart}</span><div class="grow"><div class="body">${esc(cardio.name)}</div>
+      <div class="sub">Cardio-Finisher (optional) · ${esc(cardio.detail)}</div></div></div>`;
   out += section('Nächstes Training', list(`<div class="cell"><div class="grow">
         <div class="title2">${esc(plan.name)}</div><div class="sub">${esc(plan.focus)}</div></div>
-        <span class="pill">Woche ${count + 1}</span></div>${rows}`)
+        <span class="pill">Woche ${count + 1}</span></div>${rows}${cardioRow}`)
     + `<button class="btn-filled" data-action="start" data-w="${w}">Training starten</button>
        <button class="btn-plain" data-action="start" data-w="${other}">Stattdessen ${esc(WORKOUTS[other].name)}</button>`,
     (changed ? `${changed} Übung${changed > 1 ? 'en' : ''} gegenüber letzter Woche gewechselt. ` : '')
@@ -155,7 +160,7 @@ function viewWorkout() {
   const total = c.exercises.reduce((n, e) => n + e.sets.length, 0);
   let out = section('', list(`<div class="cell"><span class="cell-icon tint-blue">${ICON.clock}</span><div class="grow">
       <div class="body">${done} von ${total} Sätzen</div><div class="progress"><span style="width:${(100 * done / total) || 0}%"></span></div></div>
-      <div class="value">${mins} Min.</div></div>`), 'Haken setzen = Satz fertig. Danach startet automatisch die Pause.');
+      <div class="value">${mins} Min.</div></div>`), 'Jeder Satz bis kurz vors Muskelversagen – 1–2 Wdh. sollten noch gehen. Haken setzen = Satz fertig, danach startet die Pause.');
 
   out += c.exercises.map((e, i) => {
     const E = ex(e.exId); const s = e.suggestion;
@@ -176,6 +181,7 @@ function viewWorkout() {
           <div class="sub">Ziel ${E.sets} × ${E.reps[0]}–${E.reps[1]} ${E.unit}.${last ? ' · Zuletzt ' + esc(setsTxt(last.sets)) : ''}</div></div>
           <button class="circle-btn" data-action="swap" data-i="${i}" aria-label="Übung tauschen">${ICON.swap}</button></div>
         <div class="cell hint ${s.status}">${hintIcon}<span>${esc(s.note)}</span></div>
+        ${i === 0 && warmupSets(e.exId, s.weight) ? `<div class="cell hint">${ICON.flame}<span>Aufwärmen: ${warmupSets(e.exId, s.weight).map((x) => `${fmtKg(x.w)} kg × ${x.r}`).join(', danach ')} – nicht abhaken.</span></div>` : ''}
         ${plateau(e.exId) ? `<div class="cell hint down">${ICON.repeat}<span>3 Einheiten ohne Fortschritt – probier eine andere Übung (⇄).</span></div>` : ''}
         <div class="set-head"><span>Satz</span><span>kg</span><span>${E.unit}.</span><span></span></div>
         ${rows}
@@ -185,6 +191,11 @@ function viewWorkout() {
         <div class="cell tech hidden" id="tip-${i}"><span class="sub">${esc(E.tip)}</span></div>
       </div></section>`;
   }).join('');
+  const cd = cardioById(c.cardio?.id);
+  if (cd) out += section('Cardio-Finisher · optional', list(`<div class="cell ${c.cardio.done ? 'cardio-done' : ''}"><span class="cell-icon tint-red">${ICON.heart}</span>
+      <div class="grow"><div class="headline">${esc(cd.name)}</div><div class="sub">${esc(cd.detail)}</div></div>
+      <button class="check ${c.cardio.done ? 'on' : ''}" data-action="toggle-cardio" aria-label="Cardio erledigt">${ICON.check}</button></div>`),
+      'Für Ausdauer und Fitness. Hast du keine Zeit mehr, lass ihn weg – das Krafttraining ist wichtiger.');
   out += `<button class="btn-filled" data-action="finish">Training beenden</button>
     <button class="btn-plain destructive" data-action="discard">Training verwerfen</button>`;
   return out;
@@ -216,9 +227,14 @@ function viewSummary() {
       <div class="tile"><span class="tile-label">Volumen</span><span class="tile-value tint-orange">${(volume(s) / 1000).toFixed(1).replace('.', ',')}<small> t</small></span></div>
     </div>
     ${s.prs?.length ? section('', list(`<div class="cell"><span class="cell-icon tint-orange">${ICON.trophy}</span><div class="grow"><div class="body">${s.prs.length} neue Bestleistung${s.prs.length > 1 ? 'en' : ''}!</div></div></div>`)) : ''}
-    ${section('Heute geschafft', list(rows))}
+    ${section('Heute geschafft', list(rows + cardioCell(s)))}
     ${next ? section(`${esc(WORKOUTS[s.workout].name)} nächste Woche`, list(next), 'Gewichte und Ziel-Wiederholungen passt die App automatisch an. Einige Übungen wechseln jede Woche für neue Reize.') : ''}
     <button class="btn-filled" data-action="nav" data-to="home">Fertig</button>`;
+}
+
+function cardioCell(s) {
+  const cd = s.cardio && cardioById(s.cardio);
+  return cd ? `<div class="cell"><span class="cell-icon tint-red">${ICON.heart}</span><div class="grow"><div class="body">${esc(cd.name)}</div><div class="sub">Cardio-Finisher erledigt</div></div></div>` : '';
 }
 
 function empty(icon, title, sub) {
@@ -252,6 +268,7 @@ function viewSession() {
     s.exercises.map((e) => section(esc(ex(e.exId)?.name || e.exId) + (s.prs?.includes(e.exId) ? ' 🏆' : ''),
       list(e.sets.map((x, j) => `<div class="cell"><div class="grow"><div class="body">Satz ${j + 1}</div></div>
         <div class="value strong">${x.w ? fmtKg(x.w) + ' kg × ' : ''}${x.r} ${ex(e.exId)?.unit || ''}.</div></div>`).join('')))).join('') +
+    (s.cardio ? section('Cardio', list(cardioCell(s))) : '') +
     section('', list(`<button class="cell cell-button destructive" data-action="delete-session" data-id="${s.id}">Training löschen</button>`));
 }
 
@@ -305,25 +322,37 @@ function viewPlan() {
     const nextId = slotRotation(w, slot, count + weeksUntilChange(slot, count));
     const wu = weeksUntilChange(slot, count);
     const ov = state.overrides[slot.id] && state.overrides[slot.id].period === slotPeriod(slot, count);
-    const opts = slot.options.map((id) => `<option value="${id}" ${id === cur ? 'selected' : ''}>${esc(ex(id).name)}</option>`).join('');
+    const opts = slotOptions(slot).map((id) => `<option value="${id}" ${id === cur ? 'selected' : ''}>${esc(ex(id).name)}</option>`).join('');
+    const nOn = slot.options.filter((id) => !state.excluded[id]).length;
+    const variants = slot.options.map((id) => `<label class="variant"><span>${esc(ex(id).name)}</span>
+        <input type="checkbox" class="switch" data-action="exclude" data-ex="${id}" ${state.excluded[id] ? '' : 'checked'}></label>`).join('');
     return `<div class="cell slot-cell"><div class="grow">
         <div class="sub">${esc(slot.label)} · ${slot.main ? 'Grundübung' : 'wechselt wöchentlich'}${ov ? ' · manuell gewählt' : ''}</div>
         <label class="slot-select"><select data-action="override" data-slot="${slot.id}">${opts}</select>${ICON.chevron}</label>
         <div class="sub">${E.sets} × ${E.reps[0]}–${E.reps[1]} ${E.unit}. · Steigerung
           <input class="inc" type="text" inputmode="decimal" value="${fmtKg(Math.abs(incOf(cur)))}" data-action="inc" data-ex="${cur}" aria-label="Steigerung in kg"> kg</div>
         <div class="sub next-up">${ICON.repeat} ${wu === 1 ? 'Nächste Woche' : `In ${wu} Wochen`}: ${esc(ex(nextId).name)}</div>
+        <details class="variants" ${route.params.open === slot.id ? 'open' : ''} data-slot="${slot.id}"><summary>Varianten (${nOn} von ${slot.options.length} aktiv)</summary>${variants}</details>
       </div></div>`;
   }).join('');
   const feat = (icon, tint, title, text) => `<div class="cell feature"><span class="cell-icon tint-${tint}">${icon}</span><div class="grow"><div class="body strong">${title}</div><div class="sub">${text}</div></div></div>`;
   return seg
     + section(`Woche ${count + 1}`, list(rows),
-      `Ergänzungsübungen wechseln jede Woche, Grundübungen alle ${state.settings.mainEvery} Wochen (versetzt). Tippe auf eine Übung, um sie bis zum nächsten Wechsel zu tauschen.`)
+      `Ergänzungsübungen wechseln jede Woche, Grundübungen alle ${state.settings.mainEvery} Wochen (versetzt). Unter „Varianten“ schaltest du Übungen aus, die du nicht magst oder die dein Studio nicht hat.`)
+    + section('Darauf basiert dein Plan', list(
+      feat(ICON.repeat, 'blue', 'Jeder Muskel 2× pro Woche', 'Trainingsfrequenz von 2× pro Woche gilt in der Forschung (u. a. Brad Schoenfeld) als effektiv – ideal für Ganzkörper.')
+      + feat(ICON.trend, 'green', 'Genug harte Sätze', 'Ca. 6–10 Sätze pro Muskel und Woche. Schon ab ~4 Sätzen wächst der Muskel, mehr bringt mehr – solange du dich erholst.')
+      + feat(ICON.flame, 'orange', 'Nah ans Muskelversagen', 'Wie bei Jeff Nippard: Jeder Satz endet 1–2 Wdh. vor dem Versagen. Lieber wenige, aber wirklich harte Sätze.')
+      + feat(ICON.sparkle, 'purple', 'Dehnung unter Last', 'Übungen, die den Muskel in gedehnter Position belasten, bauen nachweislich mehr auf: Beinbeuger sitzend statt liegend, Trizeps über Kopf, Schrägbank-Curls, RDL.')
+      + feat(ICON.clock, 'blue', 'Lange Pausen bei Grundübungen', `Grundübungen ${state.settings.rest + 60} Sek., Isolationsübungen ${state.settings.rest} Sek. – mehr Pause heißt mehr Leistung im nächsten Satz.`)
+      + feat(ICON.heart, 'red', 'Fit werden', 'Ein kurzer Cardio-Finisher am Ende verbessert Ausdauer und Herz-Kreislauf, ohne den Muskelaufbau zu stören.')),
+      'Inspiriert von evidenzbasierten Coaches wie Jeff Nippard, Brad Schoenfeld und Mike Israetel – angepasst an 2× 60 Min. pro Woche.')
     + section('So passt sich dein Plan an', list(
       feat(ICON.repeat, 'blue', 'A und B im Wechsel', 'Zwei Ganzkörpertrainings mit unterschiedlichen Übungen – jeder Muskel wird 2× pro Woche trainiert.')
       + feat(ICON.up, 'green', 'Automatisch schwerer', 'Schaffst du in allen Sätzen das obere Ende des Wiederholungsbereichs, steigt das Gewicht. Sonst ist das Ziel +1 Wiederholung.')
       + feat(ICON.down, 'red', 'Deload', 'Zweimal hintereinander unter dem Bereich → ca. 10 % leichter und neu aufbauen.')
       + feat(ICON.sparkle, 'orange', 'Jede Woche Abwechslung', `Ergänzungsübungen wechseln wöchentlich, Grundübungen alle ${state.settings.mainEvery} Wochen. Kommt eine Übung zurück, startet sie bei deinem letzten Gewicht.`)
-      + feat(ICON.info, 'blue', 'Freihantel, Maschinen & Kabelzug', 'Alle Übungen nutzen Lang-/Kurzhanteln, SZ-Stange, geführte Maschinen oder den Kabelzug – keine reinen Körpergewichtsübungen.')
+      + feat(ICON.info, 'blue', 'Freihantel, Maschinen & Kabelzug', 'Alle Übungen nutzen Lang-/Kurzhanteln, SZ-Stange, geführte Maschinen oder den Kabelzug – wie im McFit-Gerätepark.')
       + feat(ICON.trend, 'purple', 'Plateau-Erkennung', '3 Einheiten ohne Bestwert → die App schlägt einen Tausch vor.')));
 }
 
@@ -334,7 +363,7 @@ function viewSettings() {
   return section('Training', list(
       stepper('rest', 'Pausenzeit', state.settings.rest, 'Sekunden', 15)
       + stepper('mainEvery', 'Grundübungen wechseln', 'alle ' + state.settings.mainEvery, 'Wochen', 1)),
-      'Nach einer Übung ist die Pause automatisch mindestens 2 Minuten. Ergänzungsübungen wechseln immer wöchentlich.')
+      'Pause bei Isolationsübungen. Grundübungen bekommen automatisch 60 Sek. mehr. Ergänzungsübungen wechseln immer wöchentlich.')
     + section('Daten', list(`
       <button class="cell cell-link" data-action="export"><span class="cell-icon tint-blue">${ICON.share}</span><div class="grow body">Backup exportieren</div>${ICON.chevron}</button>
       <label class="cell cell-link"><span class="cell-icon tint-green">${ICON.doc}</span><div class="grow body">Backup importieren</div>${ICON.chevron}
@@ -452,10 +481,11 @@ document.addEventListener('click', (ev) => {
       keepScroll(() => {});
       if (set.done) {
         const exDone = cur.exercises[i].sets.every((s) => s.done);
+        const rest = restFor(cur.exercises[i].slot);
         if (exDone && i + 1 < cur.exercises.length) {
-          startRest(Math.max(state.settings.rest, 120));
+          startRest(rest);
           setTimeout(() => { const el = $('#ex-' + (i + 1)); if (el) window.scrollTo({ top: el.offsetTop - 60, behavior: 'smooth' }); }, 300);
-        } else if (!exDone) startRest();
+        } else if (!exDone) startRest(rest);
       }
       break;
     }
@@ -464,6 +494,16 @@ document.addEventListener('click', (ev) => {
       const sets = cur.exercises[i].sets; const lastSet = sets[sets.length - 1];
       sets.push({ w: lastSet ? lastSet.w : cur.exercises[i].suggestion.weight, r: null, done: false });
       save(); keepScroll(() => {}); break;
+    }
+    case 'toggle-cardio': cur.cardio.done = !cur.cardio.done; save(); keepScroll(() => {}); break;
+    case 'hide-ex': {
+      const idx = +t.dataset.i; const e = cur.exercises[idx];
+      const slot = WORKOUTS[cur.workout].slots.find((x) => x.id === e.slot);
+      if (slot.options.filter((id) => !state.excluded[id] && id !== e.exId).length === 0) { toast('Mindestens eine Variante muss aktiv bleiben'); break; }
+      state.excluded[e.exId] = true;
+      cur.exercises[idx] = buildExercise(slot, slotExercise(cur.workout, slot));
+      closeSheet(); save(); render(); toast('Wird nicht mehr vorgeschlagen');
+      break;
     }
     case 'tip': $('#tip-' + i).classList.toggle('hidden'); break;
     case 'swap': openSwap(i); break;
@@ -511,6 +551,14 @@ document.addEventListener('change', (ev) => {
   if (t.id === 'import-file') return importData(t.files[0]);
   const a = t.dataset.action;
   if (a === 'select-ex') go('progress', { ex: t.value });
+  if (a === 'exclude') {
+    const slot = Object.values(WORKOUTS).flatMap((w) => w.slots).find((sl) => sl.options.includes(t.dataset.ex));
+    if (!t.checked && slot.options.filter((id) => !state.excluded[id] && id !== t.dataset.ex).length === 0) {
+      t.checked = true; toast('Mindestens eine Variante muss aktiv bleiben'); return;
+    }
+    if (t.checked) delete state.excluded[t.dataset.ex]; else state.excluded[t.dataset.ex] = true;
+    save(); const y = window.scrollY; route.params.open = t.closest('details')?.dataset.slot; render(); window.scrollTo(0, y);
+  }
   if (a === 'override') {
     const slot = Object.values(WORKOUTS).flatMap((w) => w.slots).find((s) => s.id === t.dataset.slot);
     const w = slot.id[0];
@@ -544,7 +592,7 @@ function syncInputs() {
 function openSwap(i) {
   const cur = state.current; const e = cur.exercises[i];
   const slot = WORKOUTS[cur.workout].slots.find((s) => s.id === e.slot);
-  const opts = slot.options.filter((id) => id !== e.exId);
+  const opts = slotOptions(slot).filter((id) => id !== e.exId);
   $('#sheet-body').innerHTML = `
     <div class="grabber"></div>
     <div class="sheet-nav"><span></span><div class="headline">Übung tauschen</div><button class="btn-link strong" data-action="close-sheet">Abbrechen</button></div>
@@ -553,7 +601,9 @@ function openSwap(i) {
       <div class="sub">${ex(id).sets} × ${ex(id).reps[0]}–${ex(id).reps[1]} · Vorschlag ${fmtKg(suggestion(id).weight)} kg</div></div>
       <div class="swap-btns"><button class="btn-small gray" data-action="pick-swap" data-i="${i}" data-ex="${id}">Heute</button>
       <button class="btn-small" data-action="pick-swap" data-i="${i}" data-ex="${id}" data-keep="1">Bis Wechsel</button></div></div>`).join(''))}
-    <p class="section-footer">„Heute“ tauscht nur für dieses Training. „Bis Wechsel“ behält sie, bis dieser Platz im Plan regulär wechselt.</p>`;
+    <p class="section-footer">„Heute“ tauscht nur für dieses Training. „Bis Wechsel“ behält sie, bis dieser Platz im Plan regulär wechselt.</p>
+    <div class="section" style="margin-top:20px">${list(`<button class="cell cell-button destructive" data-action="hide-ex" data-i="${i}">${ICON.eyeoff}&nbsp;„${esc(ex(e.exId).name)}“ nie mehr vorschlagen</button>`)}
+    <p class="section-footer">Für Übungen, die du nicht magst oder die es in deinem Studio nicht gibt. Im Tab „Plan“ unter „Varianten“ wieder einschaltbar.</p></div>`;
   $('#sheet').classList.add('show');
 }
 function closeSheet() { $('#sheet').classList.remove('show'); }

@@ -9,6 +9,7 @@ const defaultState = () => ({
   current: null,           // laufendes Training
   overrides: {},           // slotId -> { exId, period } (manueller Tausch, gilt bis zum nächsten Wechsel)
   exSettings: {},          // exId -> { inc }
+  excluded: {},            // exId -> true (mag ich nicht / gibt es in meinem Studio nicht)
   bodyweight: [],          // { date, kg }
   settings: { rest: 90, mainEvery: 4 },
   notice: null,
@@ -32,6 +33,8 @@ function migrate(data) {
   delete st.blocks; delete st.blockSessions; delete st.settings.blockLen; st.notice = null;
   // laufendes Training mit Übungen, die es nicht mehr gibt, verwerfen
   if (st.current && st.current.exercises.some((e) => !EXERCISES[e.exId] || EXERCISES[e.exId].legacy)) st.current = null;
+  if (st.current && !WORKOUTS[st.current.workout].slots.every((sl) => st.current.exercises.some((e) => e.slot === sl.id))) st.current = null;
+  st.excluded = st.excluded || {};
   return st;
 }
 function save() {
@@ -70,12 +73,18 @@ function toast(msg) {
 function workoutCount(w) { return state.sessions.filter((s) => s.workout === w).length; }
 function slotEvery(slot) { return slot.main ? Math.max(1, state.settings.mainEvery) : 1; }
 function slotPeriod(slot, count) { return Math.floor((count + (slot.main ? (slot.shift || 0) % slotEvery(slot) : 0)) / slotEvery(slot)); }
+// Varianten ohne ausgeblendete Übungen (sind alle ausgeblendet, bleiben alle erlaubt)
+function slotOptions(slot) {
+  const ok = slot.options.filter((id) => !state.excluded[id]);
+  return ok.length ? ok : slot.options;
+}
 function slotRotation(w, slot, count = workoutCount(w)) {
-  return slot.options[slotPeriod(slot, count) % slot.options.length];
+  const opts = slotOptions(slot);
+  return opts[slotPeriod(slot, count) % opts.length];
 }
 function slotExercise(w, slot, count = workoutCount(w)) {
   const o = state.overrides[slot.id];
-  if (o && o.period === slotPeriod(slot, count) && EXERCISES[o.exId]) return o.exId;
+  if (o && o.period === slotPeriod(slot, count) && EXERCISES[o.exId] && !state.excluded[o.exId]) return o.exId;
   return slotRotation(w, slot, count);
 }
 // Wochen bis zum nächsten Wechsel dieses Slots
@@ -181,8 +190,25 @@ function startWorkout(w) {
   state.current = {
     id: uid(), workout: w, startedAt: new Date().toISOString(),
     exercises: plan.slots.map((slot) => buildExercise(slot, slotExercise(w, slot))),
+    cardio: { id: cardioFor(state.sessions.length).id, done: false },
   };
   save(); go('workout');
+}
+
+function cardioFor(n) { return CARDIO[n % CARDIO.length]; }
+const cardioById = (id) => CARDIO.find((c) => c.id === id);
+
+// Pause: Grundübungen länger (bessere Leistung im nächsten Satz), Isolation kürzer
+function restFor(slotId) {
+  const slot = Object.values(WORKOUTS).flatMap((w) => w.slots).find((s) => s.id === slotId);
+  return slot?.main ? state.settings.rest + 60 : state.settings.rest;
+}
+
+// Aufwärmsätze für die erste Grundübung
+function warmupSets(exId, weight) {
+  const step = Math.abs(incOf(exId)) || 2.5;
+  if (!weight || weight < 20 || incOf(exId) < 0) return null;
+  return [{ w: roundTo(weight * 0.5, step), r: 8 }, { w: roundTo(weight * 0.75, step), r: 4 }];
 }
 
 function buildExercise(slot, exId) {
@@ -212,6 +238,7 @@ function finishWorkout() {
     durationMin: Math.round((Date.now() - new Date(cur.startedAt)) / 60000),
     exercises: done.map((e) => ({ slot: e.slot, exId: e.exId, sets: e.sets.map(({ w, r }) => ({ w, r, done: true })) })),
     prs,
+    cardio: cur.cardio?.done ? cur.cardio.id : null,
   };
   state.sessions.push(session);
   state.current = null;

@@ -21,6 +21,9 @@ const EXERCISES = {
   goblet:      { name: 'Goblet Squat (Kurzhantel)', type: 'free', sets: 3, reps: [10, 15], inc: 2, start: 14, unit: 'Wdh',
                  tip: 'Hantel vor der Brust, Ellbogen zwischen die Knie, aufrechter Oberkörper.' },
 
+  belt_squat:  { name: 'Belt Squat (Maschine)', type: 'machine', sets: 3, reps: [8, 12], inc: 5, start: 40, unit: 'Wdh',
+                 tip: 'Gurt um die Hüfte, aufrechter Oberkörper, tief und kontrolliert – schont den Rücken.' },
+
   // ---------- Beine: Hüftstreckung ----------
   rdl_bb:      { name: 'Rumänisches Kreuzheben (Langhantel)', type: 'free', sets: 3, reps: [8, 12], inc: 2.5, start: 30, unit: 'Wdh',
                  tip: 'Knie leicht gebeugt, Hüfte nach hinten schieben, Stange nah am Bein. Rücken gerade!' },
@@ -40,10 +43,13 @@ const EXERCISES = {
                  tip: 'Wdh. pro Bein. Hinterer Fuß auf der Bank, Gewicht auf dem vorderen Bein.' },
 
   // ---------- Beinbeuger ----------
-  legcurl_ly:  { name: 'Beinbeuger liegend (Maschine)', type: 'machine', sets: 3, reps: [10, 15], inc: 5, start: 25, unit: 'Wdh',
+  legcurl_ly:  { legacy: true, name: 'Beinbeuger liegend (Maschine)', type: 'machine', sets: 3, reps: [10, 15], inc: 5, start: 25, unit: 'Wdh',
                  tip: 'Hüfte auf das Polster drücken, kontrolliert ablassen.' },
   legcurl_sit: { name: 'Beinbeuger sitzend (Maschine)', type: 'machine', sets: 3, reps: [10, 15], inc: 5, start: 30, unit: 'Wdh',
                  tip: 'Oberschenkelpolster fest, volle Bewegung ausnutzen.' },
+
+  legcurl_uni: { name: 'Beinbeuger sitzend einbeinig (Maschine)', type: 'machine', sets: 3, reps: [10, 12], inc: 2.5, start: 15, unit: 'Wdh',
+                 tip: 'Wdh. pro Bein. Oberkörper leicht nach vorne lehnen – das dehnt den Beinbeuger stärker.' },
 
   // ---------- Brust ----------
   bench_bb:    { name: 'Bankdrücken (Langhantel)', type: 'free', sets: 3, reps: [6, 10], inc: 2.5, start: 30, unit: 'Wdh',
@@ -88,36 +94,40 @@ const EXERCISES = {
                  tip: 'Leicht vorgebeugt, bis Schulterhöhe, kein Schwung.' },
   lateral_m:   { name: 'Seitheben-Maschine', type: 'machine', sets: 3, reps: [12, 15], inc: 5, start: 15, unit: 'Wdh',
                  tip: 'Schulter auf Höhe der Drehachse, Ellbogen führen die Bewegung.' },
-  reverse_fly: { name: 'Reverse Butterfly (Maschine)', type: 'machine', sets: 3, reps: [12, 15], inc: 5, start: 20, unit: 'Wdh',
+  reverse_fly: { name: 'Reverse Butterfly (Maschine)', type: 'machine', sets: 2, reps: [12, 15], inc: 5, start: 20, unit: 'Wdh',
                  tip: 'Brust ans Polster, Arme fast gestreckt nach hinten führen.' },
-  rear_db:     { name: 'Vorgebeugtes Seitheben (Kurzhantel)', type: 'free', sets: 3, reps: [12, 15], inc: 1, start: 5, unit: 'Wdh',
+  rear_db:     { name: 'Vorgebeugtes Seitheben (Kurzhantel)', type: 'free', sets: 2, reps: [12, 15], inc: 1, start: 5, unit: 'Wdh',
                  tip: 'Oberkörper fast waagerecht, Arme seitlich anheben, Schulterblätter nicht hochziehen.' },
 
   // ---------- Arme ----------
   curl_db:     { name: 'Bizeps-Curls (Kurzhantel)', type: 'free', sets: 2, reps: [10, 12], inc: 1, start: 10, unit: 'Wdh',
                  tip: 'Ellbogen bleiben am Körper.' },
-  curl_sz:     { name: 'Bizeps-Curls (SZ-Stange)', type: 'free', sets: 2, reps: [8, 12], inc: 2.5, start: 15, unit: 'Wdh',
+  curl_sz:     { name: 'Bizeps-Curls (SZ-Stange)', type: 'free', sets: 3, reps: [8, 12], inc: 2.5, start: 15, unit: 'Wdh',
                  tip: 'Ellbogen fixiert, ohne Schwung aus dem Rücken.' },
   curl_m:      { name: 'Bizepsmaschine', type: 'machine', sets: 2, reps: [10, 15], inc: 5, start: 15, unit: 'Wdh',
                  tip: 'Oberarme flach auf dem Polster, unten fast komplett strecken.' },
+  curl_incline:{ name: 'Schrägbank-Curls (Kurzhantel)', type: 'free', sets: 3, reps: [10, 12], inc: 1, start: 8, unit: 'Wdh',
+                 tip: 'Bank ca. 60°, Arme hängen hinter dem Körper – starke Dehnung im Bizeps.' },
   hammer:      { name: 'Hammer-Curls (Kurzhantel)', type: 'free', sets: 2, reps: [10, 12], inc: 1, start: 10, unit: 'Wdh',
                  tip: 'Neutraler Griff, Daumen zeigen nach oben.' },
   tri_m:       { name: 'Trizepsmaschine / Dip-Maschine', type: 'machine', sets: 2, reps: [10, 15], inc: 5, start: 25, unit: 'Wdh',
                  tip: 'Ellbogen nah am Körper, unten komplett strecken.' },
-  skull_sz:    { name: 'French Press (SZ-Stange)', type: 'free', sets: 2, reps: [8, 12], inc: 2.5, start: 10, unit: 'Wdh',
+  skull_sz:    { name: 'French Press (SZ-Stange)', type: 'free', sets: 3, reps: [8, 12], inc: 2.5, start: 10, unit: 'Wdh',
                  tip: 'Auf der Bank liegend, Stange Richtung Stirn absenken, Ellbogen zeigen nach oben.' },
-  oh_tri_db:   { name: 'Trizeps Überkopf (Kurzhantel)', type: 'free', sets: 2, reps: [10, 12], inc: 2, start: 12, unit: 'Wdh',
+  oh_tri_db:   { name: 'Trizeps Überkopf (Kurzhantel)', type: 'free', sets: 3, reps: [10, 12], inc: 2, start: 12, unit: 'Wdh',
                  tip: 'Sitzend, eine Hantel mit beiden Händen hinter dem Kopf absenken.' },
 
   // ---------- Rumpf / Waden ----------
-  crunch_m:    { name: 'Bauchmaschine', type: 'machine', sets: 3, reps: [10, 15], inc: 5, start: 20, unit: 'Wdh',
+  crunch_m:    { legacy: true, name: 'Bauchmaschine', type: 'machine', sets: 3, reps: [10, 15], inc: 5, start: 20, unit: 'Wdh',
                  tip: 'Wirbelsäule einrollen, nicht aus den Armen ziehen.' },
-  torso_m:     { name: 'Rotationsmaschine (schräge Bauchmuskeln)', type: 'machine', sets: 3, reps: [10, 15], inc: 5, start: 20, unit: 'Wdh',
+  torso_m:     { name: 'Rotationsmaschine (schräge Bauchmuskeln)', type: 'machine', sets: 2, reps: [10, 15], inc: 5, start: 20, unit: 'Wdh',
                  tip: 'Wdh. pro Seite. Langsam drehen, Hüfte bleibt fest.' },
   backext_m:   { name: 'Rückenstrecker-Maschine', type: 'machine', sets: 3, reps: [10, 15], inc: 5, start: 30, unit: 'Wdh',
                  tip: 'Langsam aufrichten, nicht ins Hohlkreuz überstrecken.' },
   calf_m:      { name: 'Wadenmaschine stehend', type: 'machine', sets: 3, reps: [10, 15], inc: 5, start: 40, unit: 'Wdh',
                  tip: 'Unten dehnen, oben 1 Sek. halten.' },
+  calf_legpress:{ name: 'Wadendrücken an der Beinpresse', type: 'machine', sets: 3, reps: [10, 15], inc: 5, start: 60, unit: 'Wdh',
+                 tip: 'Nur die Fußballen auf der Platte, unten 2 Sek. dehnen, oben anspannen.' },
   calf_seated: { name: 'Wadenmaschine sitzend', type: 'machine', sets: 3, reps: [12, 15], inc: 5, start: 20, unit: 'Wdh',
                  tip: 'Volle Bewegung, oben kurz halten.' },
 
@@ -130,15 +140,15 @@ const EXERCISES = {
                   tip: 'Aufrecht sitzen, Schulterblätter zuerst zusammenziehen, nicht nach hinten lehnen.' },
   lateral_cable:{ name: 'Seitheben am Kabel', type: 'cable', sets: 3, reps: [12, 15], inc: 2.5, start: 5, unit: 'Wdh',
                   tip: 'Wdh. pro Seite. Einarmig, Kabel hinter dem Körper führen.' },
-  facepull:     { name: 'Face Pulls (Kabel)', type: 'cable', sets: 3, reps: [12, 15], inc: 2.5, start: 15, unit: 'Wdh',
+  facepull:     { name: 'Face Pulls (Kabel)', type: 'cable', sets: 2, reps: [12, 15], inc: 2.5, start: 15, unit: 'Wdh',
                   tip: 'Seil zur Stirn ziehen, Ellbogen hoch – gut für die Schultergesundheit.' },
-  curl_cable:   { name: 'Bizeps-Curls am Kabel', type: 'cable', sets: 2, reps: [10, 15], inc: 2.5, start: 15, unit: 'Wdh',
+  curl_cable:   { name: 'Bizeps-Curls am Kabel', type: 'cable', sets: 3, reps: [10, 15], inc: 2.5, start: 15, unit: 'Wdh',
                   tip: 'Gerade Stange oder Seil, Ellbogen fixiert, oben kurz anspannen.' },
   pushdown:     { name: 'Trizepsdrücken am Kabel', type: 'cable', sets: 2, reps: [10, 15], inc: 2.5, start: 20, unit: 'Wdh',
                   tip: 'Ellbogen am Körper fixiert, unten komplett strecken.' },
-  overhead_tri: { name: 'Trizeps Überkopf (Kabel/Seil)', type: 'cable', sets: 2, reps: [10, 15], inc: 2.5, start: 15, unit: 'Wdh',
+  overhead_tri: { name: 'Trizeps Überkopf (Kabel/Seil)', type: 'cable', sets: 3, reps: [10, 15], inc: 2.5, start: 15, unit: 'Wdh',
                   tip: 'Mit dem Rücken zum Kabel, Ellbogen zeigen nach vorne-oben.' },
-  cable_crunch: { name: 'Kabel-Crunch (kniend)', type: 'cable', sets: 3, reps: [10, 15], inc: 5, start: 20, unit: 'Wdh',
+  cable_crunch: { name: 'Kabel-Crunch (kniend)', type: 'cable', sets: 2, reps: [10, 15], inc: 5, start: 20, unit: 'Wdh',
                   tip: 'Seil neben dem Kopf, Wirbelsäule einrollen – die Hüfte bleibt still.' },
   pullthrough:  { name: 'Pull-Through (Kabel)', type: 'cable', sets: 3, reps: [10, 15], inc: 5, start: 20, unit: 'Wdh',
                   tip: 'Rücken zum Kabel, Seil zwischen den Beinen, Hüfte nach hinten schieben und Po anspannen.' },
@@ -153,34 +163,46 @@ const EXERCISES = {
 };
 
 // Zwei Ganzkörper-Einheiten (A und B) im Wechsel – jede kommt einmal pro Woche dran.
-// main: true  = Grundübung, wechselt alle paar Wochen (Einstellung "Grundübungen wechseln alle …")
-//               shift versetzt den Wechsel, damit nicht alle Grundübungen in derselben Woche wechseln
+// Aufbau nach evidenzbasierten Prinzipien (u. a. Brad Schoenfeld, Jeff Nippard, Mike Israetel):
+//  - jeder große Muskel 2× pro Woche, ca. 6–10 harte Sätze pro Muskel und Woche
+//  - Grundübung zuerst, dann Isolation; Übungen mit Dehnung unter Last bevorzugt
+//    (z. B. Beinbeuger sitzend statt liegend, Trizeps über Kopf, Schrägbank-Curls, RDL)
+//  - Sätze nahe am Muskelversagen (1–2 Wdh. Reserve), doppelte Progression
+// main: true  = Grundübung, wechselt alle paar Wochen (versetzt über shift)
 // main: false = Ergänzungsübung, wechselt jede Woche
 const WORKOUTS = {
   A: {
     name: 'Ganzkörper A',
-    focus: 'Kniebeuge · Brust · Latzug',
+    focus: 'Beine vorne · Brust · Latzug · Arme',
     slots: [
-      { id: 'A1', label: 'Beine – Kniebeuge', main: true, shift: 0, options: ['legpress', 'squat_smith', 'hack_squat', 'goblet', 'squat_bb'] },
-      { id: 'A2', label: 'Brust – Drücken',   main: true, shift: 2, options: ['chestpress', 'bench_bb', 'incline_db', 'bench_db', 'incline_smith'] },
-      { id: 'A3', label: 'Rücken – Ziehen von oben', main: true, shift: 1, options: ['latpull_m', 'latpull', 'pullup_ass', 'latpull_cg', 'pullover_m'] },
-      { id: 'A4', label: 'Beinbeuger',        options: ['legcurl_ly', 'legcurl_sit'] },
-      { id: 'A5', label: 'Schultern seitlich', options: ['lateral_db', 'lateral_cable', 'lateral_m'] },
-      { id: 'A6', label: 'Trizeps',           options: ['tri_m', 'pushdown', 'skull_sz', 'overhead_tri', 'oh_tri_db'] },
-      { id: 'A7', label: 'Bauch',             options: ['crunch_m', 'cable_crunch', 'torso_m'] },
+      { id: 'A1', label: 'Beine – Kniebeuge', main: true, shift: 0, options: ['hack_squat', 'legpress', 'squat_smith', 'belt_squat', 'squat_bb'] },
+      { id: 'A2', label: 'Brust – Drücken',   main: true, shift: 2, options: ['bench_db', 'chestpress', 'bench_bb', 'incline_smith'] },
+      { id: 'A3', label: 'Rücken – Ziehen von oben', main: true, shift: 1, options: ['latpull', 'latpull_m', 'latpull_cg', 'pullup_ass'] },
+      { id: 'A4', label: 'Beinbeuger',        options: ['legcurl_sit', 'legcurl_uni'] },
+      { id: 'A5', label: 'Schultern seitlich', options: ['lateral_cable', 'lateral_db', 'lateral_m'] },
+      { id: 'A6', label: 'Trizeps',           options: ['overhead_tri', 'oh_tri_db', 'skull_sz', 'pushdown', 'tri_m'] },
+      { id: 'A7', label: 'Waden',             options: ['calf_m', 'calf_legpress', 'calf_seated'] },
     ],
   },
   B: {
     name: 'Ganzkörper B',
-    focus: 'Hüfte/Po · Schultern · Rudern',
+    focus: 'Po & Beinbeuger · Rudern · Schulter/Schrägbank · Arme',
     slots: [
-      { id: 'B1', label: 'Beine – Hüftstreckung', main: true, shift: 1, options: ['rdl_bb', 'hipthrust', 'rdl_db', 'deadlift'] },
-      { id: 'B2', label: 'Schultern – Drücken', main: true, shift: 3, options: ['shoulderpress', 'ohp_db', 'ohp_smith', 'ohp_bb'] },
-      { id: 'B3', label: 'Rücken – Rudern',   main: true, shift: 0, options: ['row_machine', 'row_cable', 'row_db', 'tbar', 'row_bb'] },
-      { id: 'B4', label: 'Beine – Oberschenkel vorne', options: ['legext', 'lunge_db', 'bulgarian'] },
+      { id: 'B1', label: 'Beine – Hüftstreckung', main: true, shift: 1, options: ['rdl_bb', 'rdl_db', 'hipthrust', 'deadlift'] },
+      { id: 'B2', label: 'Rücken – Rudern',   main: true, shift: 0, options: ['row_cable', 'row_machine', 'tbar', 'row_db', 'row_bb'] },
+      { id: 'B3', label: 'Schräg-/Schulterdrücken', main: true, shift: 3, options: ['incline_db', 'shoulderpress', 'incline_smith', 'ohp_db', 'ohp_smith'] },
+      { id: 'B4', label: 'Beine – Oberschenkel vorne', options: ['legext', 'bulgarian', 'lunge_db'] },
       { id: 'B5', label: 'Hintere Schulter',  options: ['reverse_fly', 'facepull', 'rear_db'] },
-      { id: 'B6', label: 'Bizeps',            options: ['curl_db', 'curl_cable', 'curl_m', 'curl_sz', 'hammer'] },
-      { id: 'B7', label: 'Waden / unterer Rücken', options: ['calf_m', 'backext_m', 'calf_seated', 'pullthrough'] },
+      { id: 'B6', label: 'Bizeps',            options: ['curl_incline', 'curl_cable', 'curl_sz', 'hammer', 'curl_m'] },
+      { id: 'B7', label: 'Bauch',             options: ['cable_crunch', 'torso_m'] },
     ],
   },
 };
+
+// Optionaler Cardio-Finisher (ca. 8–10 Min.) für Ausdauer und Herz-Kreislauf – wechselt jedes Training
+const CARDIO = [
+  { id: 'bike_int',  name: 'Intervalle auf dem Rad', detail: '6 × (30 Sek. schnell / 60 Sek. locker) – ca. 9 Min.' },
+  { id: 'incline',   name: 'Steigung gehen (Laufband)', detail: '10 Min. zügig gehen bei 10–12 % Steigung' },
+  { id: 'row_int',   name: 'Rudergerät', detail: '8 × (20 Sek. kräftig / 40 Sek. locker) – ca. 8 Min.' },
+  { id: 'cross',     name: 'Crosstrainer', detail: '10 Min. zügig – du kannst noch sprechen, aber nicht singen' },
+];
