@@ -1,4 +1,5 @@
 'use strict';
+const APP_VERSION = '10';
 /* Oberfläche im iOS-Stil: Large Titles, gruppierte Listen, Systemfarben, SF-ähnliche Symbole */
 
 /* ================= Symbole ================= */
@@ -392,7 +393,7 @@ function viewSettings() {
       <div class="cell"><span class="step-no">2</span><div class="grow body">Unten auf <b>Teilen</b> tippen</div></div>
       <div class="cell"><span class="step-no">3</span><div class="grow body"><b>Zum Home-Bildschirm</b> wählen</div></div>`))
     + section('', list(`<button class="cell cell-button destructive" data-action="reset">Alle Daten löschen</button>`),
-      `Gym Plan · ${state.sessions.length} Trainings gespeichert`);
+      `Gym Plan · Version ${APP_VERSION} · ${state.sessions.length} Trainings gespeichert`);
 }
 
 /* ================= Diagramme ================= */
@@ -671,6 +672,18 @@ $('#sheet').addEventListener('click', (e) => { if (e.target.id === 'sheet') clos
 /* ================= Start ================= */
 window.addEventListener('resize', () => { if (route.name === 'progress') drawCharts(); });
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then((reg) => {
+      // beim Zurückkehren in die App nach Updates suchen
+      document.addEventListener('visibilitychange', () => { if (!document.hidden) reg.update().catch(() => {}); });
+    }).catch(() => {});
+    // neue Version aktiv -> einmal neu laden (nicht mitten im Training)
+    // (nur bei einem echten Update, nicht bei der allerersten Installation)
+    const hadController = !!navigator.serviceWorker.controller;
+    let reloaded = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (!hadController || reloaded || state.current) return; reloaded = true; location.reload();
+    });
+  });
 }
 render();
