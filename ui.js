@@ -127,8 +127,9 @@ function viewHome() {
   }).join('');
   const other = w === 'A' ? 'B' : 'A';
   const fit = fitnessFor(state.sessions.length);
-  const cardioRow = `<div class="cell cell-link" data-action="howto" data-ex="${fit.items[0].id}"><span class="cell-icon tint-red">${ICON.heart}</span><div class="grow"><div class="body">Fitness: ${esc(fit.name)}</div>
-      <div class="sub">${esc(fit.kind)} · ca. 12 Min. · ${fit.items.map((it) => esc(exInfo(it.id).name)).join(', ')}</div></div></div>`;
+  const cardioRow = `<div class="cell cell-link" data-action="fitness" data-id="${fit.id}"><span class="cell-icon tint-red">${ICON.heart}</span><div class="grow"><div class="body">Fitness: ${esc(fit.name)}</div>
+      <div class="sub">${esc(fit.kind)} · ca. 12 Min. · ${fit.items.map((it) => esc(exInfo(it.id).name)).join(', ')}</div>
+      <div class="thumb-row">${fit.items.map((it) => `<span class="thumb">${FIG.svg(it.id)}</span>`).join('')}</div></div>${ICON.chevron}</div>`;
   out += section('Nächstes Training', list(`<div class="cell"><div class="grow">
         <div class="title2">${esc(plan.name)}</div><div class="sub">${esc(plan.focus)}</div></div>
         <span class="pill">Woche ${count + 1}</span></div>${rows}${cardioRow}`)
@@ -202,8 +203,8 @@ function viewWorkout() {
   if (fb) {
     const lastV = lastFitnessValue(fb.id);
     out += `<section class="section" id="fitness"><h2 class="section-header">3 · Fitness – ${esc(fb.kind)} (ca. 12 Min.)</h2>` + list(
-      `<div class="cell ${c.fitness.done ? 'cardio-done' : ''}"><span class="cell-icon tint-red">${ICON.heart}</span>
-        <div class="grow"><div class="headline">${esc(fb.name)}</div><div class="sub">${esc(fb.detail)}</div></div></div>`
+      `<button class="cell cell-link ${c.fitness.done ? 'cardio-done' : ''}" data-action="fitness" data-id="${fb.id}"><span class="cell-icon tint-red">${ICON.heart}</span>
+        <div class="grow"><div class="headline">${esc(fb.name)}</div><div class="sub">${esc(fb.detail)}</div><span class="btn-link">${ICON.play}Alle Übungen ansehen</span></div></button>`
       + fb.items.map((it) => `<button class="cell cell-link" data-action="howto" data-ex="${it.id}"><span class="thumb">${FIG.svg(it.id, { anim: true })}</span>
           <div class="grow"><div class="body">${esc(exInfo(it.id).name)}</div><div class="sub">${esc(it.dose)}</div></div>${ICON.chevron}</button>`).join('')
       + `<div class="cell"><div class="grow"><div class="body">${esc(fb.value)}</div><div class="sub">${lastV != null ? `Letztes Mal: ${fmtKg(lastV)} – versuch etwas mehr!` : 'Trag ein, was du geschafft hast'}</div></div>
@@ -525,7 +526,8 @@ document.addEventListener('click', (ev) => {
       closeSheet(); save(); render(); toast('Wird nicht mehr vorgeschlagen');
       break;
     }
-    case 'howto': openHowto(t.dataset.ex); break;
+    case 'howto': openHowto(t.dataset.ex, t.dataset.back); break;
+    case 'fitness': openFitness(t.dataset.id); break;
     case 'swap': openSwap(i); break;
     case 'finish': syncInputs(); if (confirm('Training beenden und speichern?')) finishWorkout(); break;
     case 'discard': if (confirm('Training wirklich verwerfen? Die Sätze gehen verloren.')) { state.current = null; save(); stopRest(); go('home'); } break;
@@ -627,13 +629,32 @@ function openSwap(i) {
     <p class="section-footer">Für Übungen, die du nicht magst oder die es in deinem Studio nicht gibt. Im Tab „Plan“ unter „Varianten“ wieder einschaltbar.</p></div>`;
   $('#sheet').classList.add('show');
 }
-function openHowto(exId) {
+function openFitness(id) {
+  const fb = fitnessById(id); if (!fb) return;
+  $('#sheet-body').innerHTML = `
+    <div class="grabber"></div>
+    <div class="sheet-nav"><span></span><div class="headline">Fitness-Block</div><button class="btn-link strong" data-action="close-sheet">Fertig</button></div>
+    <div class="title2 center">${esc(fb.name)}</div>
+    <p class="sub center">${esc(fb.kind)} · ca. 12 Min.</p>
+    ${section('Ablauf', list(`<div class="cell"><span class="cell-icon tint-red">${ICON.heart}</span><div class="grow body">${esc(fb.detail)}</div></div>`))}
+    ${section(`Die ${fb.items.length} Übungen`, list(fb.items.map((it, k) => {
+      const d = FIG.def(it.id);
+      return `<button class="cell cell-link fit-item" data-action="howto" data-ex="${it.id}" data-back="${fb.id}">
+        <div class="fit-fig">${FIG.svg(it.id, { anim: true })}</div>
+        <div class="grow"><div class="sub">${k + 1}. Übung · ${esc(it.dose)}</div><div class="headline">${esc(exInfo(it.id).name)}</div>
+        <div class="sub">${esc(d?.muscles || '')}</div><span class="btn-link">${ICON.info}Anleitung</span></div></button>`;
+    }).join('')), 'Tippe auf eine Übung für die Schritt-für-Schritt-Anleitung und Videos.')}`;
+  $('#sheet').classList.add('show');
+  $('#sheet-body').scrollTop = 0;
+}
+
+function openHowto(exId, backTo) {
   const E = exInfo(exId); const d = FIG.def(exId);
   const yt = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(E.name.replace(/[()]/g, '') + ' Übung Ausführung');
   const typ = { free: 'Freihantel', machine: 'Geführte Maschine', cable: 'Kabelzug', cardio: 'Cardio-Gerät' }[E.type] || '';
   $('#sheet-body').innerHTML = `
     <div class="grabber"></div>
-    <div class="sheet-nav"><span></span><div class="headline">Anleitung</div><button class="btn-link strong" data-action="close-sheet">Fertig</button></div>
+    <div class="sheet-nav">${backTo ? `<button class="btn-link sheet-back" data-action="fitness" data-id="${backTo}">‹ Zurück</button>` : '<span></span>'}<div class="headline">Anleitung</div><button class="btn-link strong" data-action="close-sheet">Fertig</button></div>
     <div class="howto-fig">${FIG.svg(exId, { anim: true })}</div>
     <div class="title2 center">${esc(E.name)}</div>
     <p class="sub center">${esc(typ)}${d ? ' · ' + esc(d.muscles) : ''}</p>
@@ -641,6 +662,7 @@ function openHowto(exId) {
     ${E.tip ? section('Tipp', list(`<div class="cell"><span class="cell-icon tint-orange">${ICON.sparkle}</span><div class="grow body">${esc(E.tip)}</div></div>`)) : ''}
     <a class="btn-filled yt" href="${yt}" target="_blank" rel="noopener">${ICON.play}&nbsp;Videos auf YouTube ansehen</a>
     <p class="section-footer center">Unsicher? Frag das McFit-Personal, dir die Übung einmal zu zeigen.</p>`;
+  $('#sheet-body').scrollTop = 0;
   $('#sheet').classList.add('show');
 }
 function closeSheet() { $('#sheet').classList.remove('show'); }
