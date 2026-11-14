@@ -88,12 +88,6 @@ const setCount = (s) => s.exercises.reduce((n, e) => n + e.sets.length, 0);
 /* ================= Views ================= */
 function viewHome() {
   let out = '';
-  if (state.notice) {
-    out += section('', list(`<div class="cell"><span class="cell-icon tint-orange">${ICON.sparkle}</span>
-      <div class="grow"><div class="body">${esc(state.notice)}</div></div></div>
-      <button class="cell cell-button" data-action="dismiss-notice">Verstanden</button>`));
-  }
-
   if (state.current) {
     const c = state.current;
     const done = c.exercises.reduce((n, e) => n + e.sets.filter((s) => s.done).length, 0);
@@ -115,22 +109,34 @@ function viewHome() {
       <div class="mini-stats"><div><b>${state.sessions.length}</b><span>Gesamt</span></div>
       <div><b>${weekStreak()}</b><span>Wochen in Folge</span></div></div></div></div>`));
 
+  const count = workoutCount(w);
+  const lastS = lastSessionOf(w);
+  const changed = plan.slots.filter((slot) => lastS && lastExerciseInSlot(lastS, slot) && lastExerciseInSlot(lastS, slot) !== slotExercise(w, slot)).length;
   const rows = plan.slots.map((slot) => {
     const id = slotExercise(w, slot); const e = ex(id); const s = suggestion(id);
-    const wt = s.weight ? fmtKg(s.weight) + ' kg' : (e.unit === 'Sek' ? 'Körper' : '–');
+    const prevId = lastS && lastExerciseInSlot(lastS, slot);
+    const isChange = prevId && prevId !== id;
+    const wt = s.weight ? fmtKg(s.weight) + ' kg' : '–';
     return `<div class="cell"><div class="grow"><div class="body">${esc(e.name)} ${badge(s.status)}</div>
-      <div class="sub">${esc(slot.label)}</div></div>
+      <div class="sub">${esc(slot.label)}${isChange ? ' · <span class="tint-purple">neu diese Woche</span>' : ''}</div></div>
       <div class="value"><div>${wt}</div><div class="sub">${e.sets} × ${e.reps[0]}–${e.reps[1]}</div></div></div>`;
   }).join('');
   const other = w === 'A' ? 'B' : 'A';
   out += section('Nächstes Training', list(`<div class="cell"><div class="grow">
         <div class="title2">${esc(plan.name)}</div><div class="sub">${esc(plan.focus)}</div></div>
-        <span class="pill">Block ${(state.blocks[w] || 0) + 1} · ${(state.blockSessions[w] || 0) + 1}/${state.settings.blockLen}</span></div>${rows}`)
+        <span class="pill">Woche ${count + 1}</span></div>${rows}`)
     + `<button class="btn-filled" data-action="start" data-w="${w}">Training starten</button>
        <button class="btn-plain" data-action="start" data-w="${other}">Stattdessen ${esc(WORKOUTS[other].name)}</button>`,
-    'Aufwärmen: 5–8 Min. Crosstrainer oder Rad, dann bei der ersten Übung 1–2 leichte Sätze. Dauer ca. 55–60 Min.');
+    (changed ? `${changed} Übung${changed > 1 ? 'en' : ''} gegenüber letzter Woche gewechselt. ` : '')
+    + 'Aufwärmen: 5–8 Min. Crosstrainer oder Rad, dann bei der ersten Übung 1–2 leichte Sätze. Dauer ca. 55–60 Min.');
   return out;
 }
+
+function lastSessionOf(w) {
+  for (let i = state.sessions.length - 1; i >= 0; i--) if (state.sessions[i].workout === w) return state.sessions[i];
+  return null;
+}
+function lastExerciseInSlot(session, slot) { return session.exercises.find((e) => e.slot === slot.id)?.exId; }
 
 function weekStreak() {
   if (!state.sessions.length) return 0;
@@ -188,12 +194,19 @@ function viewSummary() {
   const s = state.sessions.find((x) => x.id === route.params.id);
   if (!s) return viewHome();
   const rows = s.exercises.map((e) => {
-    const sug = suggestion(e.exId); const E = ex(e.exId); const pr = s.prs?.includes(e.exId);
-    const arrow = { up: `<span class="tint-green">${ICON.up}</span>`, down: `<span class="tint-red">${ICON.down}</span>` }[sug.status] || '';
+    const E = ex(e.exId); const pr = s.prs?.includes(e.exId);
     return `<div class="cell"><div class="grow"><div class="body">${esc(E.name)} ${pr ? `<span class="badge orange">${ICON.trophy}Rekord</span>` : ''}</div>
-      <div class="sub">${esc(setsTxt(e.sets))}</div></div>
-      <div class="value">${arrow}${sug.weight ? fmtKg(sug.weight) + ' kg' : ''}<div class="sub">Ziel ${sug.reps} ${E.unit}.</div></div></div>`;
+      <div class="sub">${esc(setsTxt(e.sets))}</div></div></div>`;
   }).join('');
+  const isLast = lastSessionOf(s.workout)?.id === s.id;
+  const next = isLast ? WORKOUTS[s.workout].slots.map((slot) => {
+    const id = slotExercise(s.workout, slot); const E = ex(id); const sug = suggestion(id);
+    const prev = lastExerciseInSlot(s, slot);
+    const arrow = { up: `<span class="tint-green">${ICON.up}</span>`, down: `<span class="tint-red">${ICON.down}</span>` }[sug.status] || '';
+    return `<div class="cell"><div class="grow"><div class="body">${esc(E.name)}</div>
+      <div class="sub">${prev && prev !== id ? '<span class="tint-purple">Neue Variante</span>' : esc(slot.label)}</div></div>
+      <div class="value">${arrow}${sug.weight ? fmtKg(sug.weight) + ' kg' : ''}<div class="sub">Ziel ${sug.reps} ${E.unit}.</div></div></div>`;
+  }).join('') : '';
   return `
     <div class="done-hero"><div class="done-circle">${ICON.check}</div>
       <div class="title1">Gut gemacht!</div><div class="sub">${esc(WORKOUTS[s.workout].name)} · ${fmtDate(s.date, { weekday: 'long', day: 'numeric', month: 'long' })}</div></div>
@@ -203,8 +216,8 @@ function viewSummary() {
       <div class="tile"><span class="tile-label">Volumen</span><span class="tile-value tint-orange">${(volume(s) / 1000).toFixed(1).replace('.', ',')}<small> t</small></span></div>
     </div>
     ${s.prs?.length ? section('', list(`<div class="cell"><span class="cell-icon tint-orange">${ICON.trophy}</span><div class="grow"><div class="body">${s.prs.length} neue Bestleistung${s.prs.length > 1 ? 'en' : ''}!</div></div></div>`)) : ''}
-    ${route.params.blockChanged ? section('', list(`<div class="cell"><span class="cell-icon tint-blue">${ICON.repeat}</span><div class="grow"><div class="body">Block abgeschlossen</div><div class="sub">Beim nächsten ${esc(WORKOUTS[s.workout].name)} warten neue Übungsvarianten.</div></div></div>`)) : ''}
-    ${section('Nächstes Mal', list(rows), 'Die App passt Gewicht und Ziel-Wiederholungen automatisch an deine Leistung an.')}
+    ${section('Heute geschafft', list(rows))}
+    ${next ? section(`${esc(WORKOUTS[s.workout].name)} nächste Woche`, list(next), 'Gewichte und Ziel-Wiederholungen passt die App automatisch an. Einige Übungen wechseln jede Woche für neue Reize.') : ''}
     <button class="btn-filled" data-action="nav" data-to="home">Fertig</button>`;
 }
 
@@ -286,25 +299,31 @@ function viewPlan() {
   const plan = WORKOUTS[w];
   const seg = `<div class="segmented" role="tablist">${['A', 'B'].map((k) =>
     `<button role="tab" class="${k === w ? 'active' : ''}" data-action="seg" data-w="${k}">${esc(WORKOUTS[k].name)}</button>`).join('')}</div>`;
+  const count = workoutCount(w);
   const rows = plan.slots.map((slot) => {
     const cur = slotExercise(w, slot); const E = ex(cur);
+    const nextId = slotRotation(w, slot, count + weeksUntilChange(slot, count));
+    const wu = weeksUntilChange(slot, count);
+    const ov = state.overrides[slot.id] && state.overrides[slot.id].period === slotPeriod(slot, count);
     const opts = slot.options.map((id) => `<option value="${id}" ${id === cur ? 'selected' : ''}>${esc(ex(id).name)}</option>`).join('');
     return `<div class="cell slot-cell"><div class="grow">
-        <div class="sub">${esc(slot.label)}${state.overrides[slot.id] ? ' · manuell gewählt' : ''}</div>
+        <div class="sub">${esc(slot.label)} · ${slot.main ? 'Grundübung' : 'wechselt wöchentlich'}${ov ? ' · manuell gewählt' : ''}</div>
         <label class="slot-select"><select data-action="override" data-slot="${slot.id}">${opts}</select>${ICON.chevron}</label>
         <div class="sub">${E.sets} × ${E.reps[0]}–${E.reps[1]} ${E.unit}. · Steigerung
           <input class="inc" type="text" inputmode="decimal" value="${fmtKg(Math.abs(incOf(cur)))}" data-action="inc" data-ex="${cur}" aria-label="Steigerung in kg"> kg</div>
+        <div class="sub next-up">${ICON.repeat} ${wu === 1 ? 'Nächste Woche' : `In ${wu} Wochen`}: ${esc(ex(nextId).name)}</div>
       </div></div>`;
   }).join('');
   const feat = (icon, tint, title, text) => `<div class="cell feature"><span class="cell-icon tint-${tint}">${icon}</span><div class="grow"><div class="body strong">${title}</div><div class="sub">${text}</div></div></div>`;
   return seg
-    + section(`Block ${(state.blocks[w] || 0) + 1} · ${state.blockSessions[w] || 0} von ${state.settings.blockLen} Einheiten`, list(rows),
-      `Grundübungen wechseln alle ${state.settings.blockLen * 2}, die übrigen alle ${state.settings.blockLen} Einheiten. Tippe auf eine Übung, um sie für den aktuellen Block zu tauschen.`)
+    + section(`Woche ${count + 1}`, list(rows),
+      `Ergänzungsübungen wechseln jede Woche, Grundübungen alle ${state.settings.mainEvery} Wochen (versetzt). Tippe auf eine Übung, um sie bis zum nächsten Wechsel zu tauschen.`)
     + section('So passt sich dein Plan an', list(
       feat(ICON.repeat, 'blue', 'A und B im Wechsel', 'Zwei Ganzkörpertrainings mit unterschiedlichen Übungen – jeder Muskel wird 2× pro Woche trainiert.')
       + feat(ICON.up, 'green', 'Automatisch schwerer', 'Schaffst du in allen Sätzen das obere Ende des Wiederholungsbereichs, steigt das Gewicht. Sonst ist das Ziel +1 Wiederholung.')
       + feat(ICON.down, 'red', 'Deload', 'Zweimal hintereinander unter dem Bereich → ca. 10 % leichter und neu aufbauen.')
-      + feat(ICON.sparkle, 'orange', 'Neue Reize', `Nach jedem Block (${state.settings.blockLen} Einheiten) wechseln Übungen. Kommt eine zurück, startet sie bei deinem letzten Gewicht.`)
+      + feat(ICON.sparkle, 'orange', 'Jede Woche Abwechslung', `Ergänzungsübungen wechseln wöchentlich, Grundübungen alle ${state.settings.mainEvery} Wochen. Kommt eine Übung zurück, startet sie bei deinem letzten Gewicht.`)
+      + feat(ICON.info, 'blue', 'Nur Freihantel & Maschinen', 'Alle Übungen nutzen Lang-/Kurzhanteln, SZ-Stange oder geführte Maschinen – kein Kabelzug, kein reines Körpergewicht.')
       + feat(ICON.trend, 'purple', 'Plateau-Erkennung', '3 Einheiten ohne Bestwert → die App schlägt einen Tausch vor.')));
 }
 
@@ -314,8 +333,8 @@ function viewSettings() {
     <button data-action="step" data-key="${key}" data-d="${d}" aria-label="mehr">${ICON.plus}</button></div></div>`;
   return section('Training', list(
       stepper('rest', 'Pausenzeit', state.settings.rest, 'Sekunden', 15)
-      + stepper('blockLen', 'Blocklänge', state.settings.blockLen, 'Einheiten je Plan', 1)),
-      'Nach einer Übung ist die Pause automatisch mindestens 2 Minuten. Nach jedem Block wechseln die Übungen.')
+      + stepper('mainEvery', 'Grundübungen wechseln', 'alle ' + state.settings.mainEvery, 'Wochen', 1)),
+      'Nach einer Übung ist die Pause automatisch mindestens 2 Minuten. Ergänzungsübungen wechseln immer wöchentlich.')
     + section('Daten', list(`
       <button class="cell cell-link" data-action="export"><span class="cell-icon tint-blue">${ICON.share}</span><div class="grow body">Backup exportieren</div>${ICON.chevron}</button>
       <label class="cell cell-link"><span class="cell-icon tint-green">${ICON.doc}</span><div class="grow body">Backup importieren</div>${ICON.chevron}
@@ -423,7 +442,6 @@ document.addEventListener('click', (ev) => {
   switch (a) {
     case 'start': startWorkout(t.dataset.w); break;
     case 'resume': go('workout'); break;
-    case 'dismiss-notice': state.notice = null; save(); render(); break;
     case 'nav': go(t.dataset.to, t.dataset.id ? { id: t.dataset.id } : {}); break;
     case 'seg': go('plan', { w: t.dataset.w }); break;
     case 'toggle-set': {
@@ -465,7 +483,7 @@ document.addEventListener('click', (ev) => {
     }
     case 'step': {
       const k = t.dataset.key; const d = +t.dataset.d;
-      const lim = k === 'rest' ? [30, 300] : [2, 20];
+      const lim = k === 'rest' ? [30, 300] : [1, 8];
       state.settings[k] = Math.min(lim[1], Math.max(lim[0], state.settings[k] + d));
       save(); keepScroll(() => {}); break;
     }
@@ -478,7 +496,7 @@ document.addEventListener('click', (ev) => {
     case 'pick-swap': {
       const idx = +t.dataset.i; const e = cur.exercises[idx];
       const slot = WORKOUTS[cur.workout].slots.find((s) => s.id === e.slot);
-      if (t.dataset.keep === '1') state.overrides[slot.id] = t.dataset.ex;
+      if (t.dataset.keep === '1') state.overrides[slot.id] = { exId: t.dataset.ex, period: slotPeriod(slot, workoutCount(cur.workout)) };
       cur.exercises[idx] = buildExercise(slot, t.dataset.ex);
       closeSheet(); save(); render();
       const el = $('#ex-' + idx); if (el) window.scrollTo(0, el.offsetTop - 60);
@@ -497,8 +515,8 @@ document.addEventListener('change', (ev) => {
     const slot = Object.values(WORKOUTS).flatMap((w) => w.slots).find((s) => s.id === t.dataset.slot);
     const w = slot.id[0];
     delete state.overrides[slot.id];
-    if (slotExercise(w, slot) !== t.value) state.overrides[slot.id] = t.value;
-    save(); render(); toast('Übung für diesen Block geändert');
+    if (slotExercise(w, slot) !== t.value) state.overrides[slot.id] = { exId: t.value, period: slotPeriod(slot, workoutCount(w)) };
+    save(); render(); toast('Übung bis zum nächsten Wechsel geändert');
   }
   if (a === 'inc') {
     const val = parseNum(t.value); if (val == null) return;
@@ -534,8 +552,8 @@ function openSwap(i) {
     ${list(opts.map((id) => `<div class="cell"><div class="grow"><div class="body">${esc(ex(id).name)}</div>
       <div class="sub">${ex(id).sets} × ${ex(id).reps[0]}–${ex(id).reps[1]} · Vorschlag ${fmtKg(suggestion(id).weight)} kg</div></div>
       <div class="swap-btns"><button class="btn-small gray" data-action="pick-swap" data-i="${i}" data-ex="${id}">Heute</button>
-      <button class="btn-small" data-action="pick-swap" data-i="${i}" data-ex="${id}" data-keep="1">Ganzer Block</button></div></div>`).join(''))}
-    <p class="section-footer">„Heute“ tauscht nur für dieses Training. „Ganzer Block“ behält die Übung, bis der Plan wechselt.</p>`;
+      <button class="btn-small" data-action="pick-swap" data-i="${i}" data-ex="${id}" data-keep="1">Bis Wechsel</button></div></div>`).join(''))}
+    <p class="section-footer">„Heute“ tauscht nur für dieses Training. „Bis Wechsel“ behält sie, bis dieser Platz im Plan regulär wechselt.</p>`;
   $('#sheet').classList.add('show');
 }
 function closeSheet() { $('#sheet').classList.remove('show'); }

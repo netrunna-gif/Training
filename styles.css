@@ -303,3 +303,5 @@ input.inc {
   max-width: calc(100% - 32px); text-align: center;
 }
 .toast.show { transform: translate(-50%, 0); }
+.next-up { display: flex; align-items: center; gap: 5px; margin-top: 2px; font-size: 13px; }
+.next-up .sym { color: var(--purple); }

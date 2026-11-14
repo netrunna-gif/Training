@@ -7,12 +7,10 @@ const defaultState = () => ({
   version: 1,
   sessions: [],            // abgeschlossene Trainings
   current: null,           // laufendes Training
-  blocks: { A: 0, B: 0 },  // aktueller Block je Einheit
-  blockSessions: { A: 0, B: 0 }, // Trainings im aktuellen Block
-  overrides: {},           // slotId -> exId (manueller Tausch, gilt bis Blockende)
+  overrides: {},           // slotId -> { exId, period } (manueller Tausch, gilt bis zum nächsten Wechsel)
   exSettings: {},          // exId -> { inc }
   bodyweight: [],          // { date, kg }
-  settings: { rest: 90, blockLen: 6 },
+  settings: { rest: 90, mainEvery: 4 },
   notice: null,
 });
 
@@ -21,9 +19,20 @@ let state = load();
 function load() {
   try {
     const raw = localStorage.getItem(STORE_KEY);
-    if (raw) return Object.assign(defaultState(), JSON.parse(raw));
+    if (raw) return migrate(JSON.parse(raw));
   } catch (e) { /* ignore */ }
   return defaultState();
+}
+function migrate(data) {
+  const d = defaultState();
+  const st = Object.assign(d, data);
+  st.settings = Object.assign(defaultState().settings, data.settings || {});
+  // alte Formate (Blöcke, Overrides als String) verwerfen
+  Object.keys(st.overrides || {}).forEach((k) => { if (typeof st.overrides[k] !== 'object') delete st.overrides[k]; });
+  delete st.blocks; delete st.blockSessions; delete st.settings.blockLen; st.notice = null;
+  // laufendes Training mit Übungen, die es nicht mehr gibt, verwerfen
+  if (st.current && st.current.exercises.some((e) => !EXERCISES[e.exId] || EXERCISES[e.exId].legacy)) st.current = null;
+  return st;
 }
 function save() {
   try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); }
@@ -57,10 +66,23 @@ function toast(msg) {
 }
 
 /* ================= Planlogik ================= */
-function slotExercise(w, slot) {
-  if (state.overrides[slot.id]) return state.overrides[slot.id];
-  const b = state.blocks[w] || 0;
-  return slot.options[Math.floor(b / (slot.every || 1)) % slot.options.length];
+// Jede Einheit (A bzw. B) kommt einmal pro Woche dran -> Anzahl absolvierter Einheiten = Woche
+function workoutCount(w) { return state.sessions.filter((s) => s.workout === w).length; }
+function slotEvery(slot) { return slot.main ? Math.max(1, state.settings.mainEvery) : 1; }
+function slotPeriod(slot, count) { return Math.floor((count + (slot.main ? (slot.shift || 0) % slotEvery(slot) : 0)) / slotEvery(slot)); }
+function slotRotation(w, slot, count = workoutCount(w)) {
+  return slot.options[slotPeriod(slot, count) % slot.options.length];
+}
+function slotExercise(w, slot, count = workoutCount(w)) {
+  const o = state.overrides[slot.id];
+  if (o && o.period === slotPeriod(slot, count) && EXERCISES[o.exId]) return o.exId;
+  return slotRotation(w, slot, count);
+}
+// Wochen bis zum nächsten Wechsel dieses Slots
+function weeksUntilChange(slot, count) {
+  let n = 1; const p = slotPeriod(slot, count);
+  while (slotPeriod(slot, count + n) === p) n++;
+  return n;
 }
 
 function nextWorkout() {
@@ -157,7 +179,7 @@ function plateau(exId) {
 function startWorkout(w) {
   const plan = WORKOUTS[w];
   state.current = {
-    id: uid(), workout: w, startedAt: new Date().toISOString(), block: state.blocks[w],
+    id: uid(), workout: w, startedAt: new Date().toISOString(),
     exercises: plan.slots.map((slot) => buildExercise(slot, slotExercise(w, slot))),
   };
   save(); go('workout');
@@ -186,7 +208,7 @@ function finishWorkout() {
   });
 
   const session = {
-    id: cur.id, workout: cur.workout, date: cur.startedAt, block: cur.block,
+    id: cur.id, workout: cur.workout, date: cur.startedAt,
     durationMin: Math.round((Date.now() - new Date(cur.startedAt)) / 60000),
     exercises: done.map((e) => ({ slot: e.slot, exId: e.exId, sets: e.sets.map(({ w, r }) => ({ w, r, done: true })) })),
     prs,
@@ -194,19 +216,8 @@ function finishWorkout() {
   state.sessions.push(session);
   state.current = null;
 
-  // Blockfortschritt
-  const w = session.workout;
-  state.blockSessions[w] = (state.blockSessions[w] || 0) + 1;
-  let blockChanged = false;
-  if (state.blockSessions[w] >= state.settings.blockLen) {
-    state.blocks[w] = (state.blocks[w] || 0) + 1;
-    state.blockSessions[w] = 0;
-    WORKOUTS[w].slots.forEach((s) => delete state.overrides[s.id]);
-    blockChanged = true;
-    state.notice = `Neuer Trainingsblock für ${WORKOUTS[w].name}! Einige Übungen wurden gewechselt, damit dein Körper neue Reize bekommt.`;
-  }
   save(); stopRest();
-  go('summary', { id: session.id, blockChanged });
+  go('summary', { id: session.id });
 }
 
 /* ================= Pausen-Timer ================= */
@@ -261,7 +272,7 @@ function importData(file) {
       const data = JSON.parse(r.result);
       if (!Array.isArray(data.sessions)) throw new Error('format');
       if (!confirm(`Backup mit ${data.sessions.length} Trainings laden? Aktuelle Daten werden ersetzt.`)) return;
-      state = Object.assign(defaultState(), data); save(); go('home'); toast('Backup geladen');
+      state = migrate(data); save(); go('home'); toast('Backup geladen');
     } catch (e) { toast('Datei ist kein gültiges Backup'); }
   };
   r.readAsText(file);
