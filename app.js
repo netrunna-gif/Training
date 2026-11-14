@@ -36,7 +36,7 @@ function migrate(data) {
   if (st.current && !WORKOUTS[st.current.workout].slots.every((sl) => st.current.exercises.some((e) => e.slot === sl.id))) st.current = null;
   st.excluded = st.excluded || {};
   // laufendes Training aus älterer Version: Fitness-Block ergänzen
-  if (st.current && !st.current.fitness) { st.current.fitness = { id: FITNESS[0].id, done: false, value: null }; delete st.current.cardio; }
+  if (st.current && (!st.current.fitness || FITNESS.find((f) => f.id === st.current.fitness.id)?.legacy)) { st.current.fitness = { id: FITNESS[0].id, done: false, value: null }; delete st.current.cardio; }
   // alte Cardio-Einträge in Fitness-Blöcke umwandeln
   st.sessions.forEach((s) => { if (s.cardio && !s.fitness) s.fitness = { id: s.cardio, value: null }; });
   return st;
@@ -199,7 +199,8 @@ function startWorkout(w) {
   save(); go('workout');
 }
 
-function fitnessFor(n) { return FITNESS[n % FITNESS.length]; }
+const FITNESS_ACTIVE = FITNESS.filter((f) => !f.legacy);
+function fitnessFor(n) { return FITNESS_ACTIVE[n % FITNESS_ACTIVE.length]; }
 const fitnessById = (id) => FITNESS.find((c) => c.id === id);
 // letzter eingetragener Wert eines Fitness-Blocks (zum Steigern)
 function lastFitnessValue(id) {

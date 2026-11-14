@@ -5,10 +5,10 @@ Läuft im Safari, lässt sich auf den Home-Bildschirm legen und funktioniert off
 
 ## Trainingsprinzipien
 Muskelaufbau **und** Fitness in 2× 60 Min. pro Woche:
-- **Aufwärmen** (5–7 Min.) mit Mobilität
+- **Aufwärmen** (5–7 Min.) mit Mobilität und leichten Hantel-/Kabelübungen
 - **Kraft** (ca. 40 Min.): jeder Muskel 2× pro Woche, ca. 6–10 Sätze pro Muskel und Woche, 2–3 Wdh. Reserve
   (nicht bis zum Muskelversagen), Übungen mit Dehnung unter Last, inspiriert von Jeff Nippard, Brad Schoenfeld, Mike Israetel
-- **Fitness** (ca. 12 Min.) im Wechsel: Kraftausdauer-Zirkel, Intervalle (Rad, Rudergerät) und Ausdauer (Crosstrainer, Steigung gehen)
+- **Fitness** (ca. 12 Min.) ohne Cardio-Geräte im Wechsel: Kraftausdauer-Zirkel, EMOM, Tabata, Kurzhantel-Komplex, Tragen & Rumpf
 - **Rumpfstabilität**: Pallof Press, Holzhacker, Farmer's Walk
 
 ## Funktionen

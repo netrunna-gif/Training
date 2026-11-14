@@ -571,10 +571,8 @@ const FIG = (() => {
     goblet_fit: ['squat', [db()], { hand: ['s', 12, 10] }],
     pallof_fit: ['pallof', [{ t: 'handle', at: 'hnd', layer: 'front' }]],
     woodchop_fit: ['woodchop'],
-    bike: ['bike'],
-    rower: ['rower'],
-    treadmill: ['walk', [{ t: 'line', x1: 60, y1: 152, x2: 150, y2: 140, w: 6 }]],
-    crosstrainer: ['cross'],
+    rdl_fit: ['hinge', [db()]],
+    db_row_bent: ['row_bent', [db()]],
   };
 
   const cache = {};

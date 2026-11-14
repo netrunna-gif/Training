@@ -215,39 +215,44 @@ const FIT_EX = {
   goblet_fit:{ name: 'Goblet Squat (Kurzhantel)', type: 'free', tip: 'Hantel vor der Brust, tief und aufrecht in die Hocke.' },
   pallof_fit:{ name: 'Pallof Press (Kabel)', type: 'cable', tip: 'Griff vor die Brust, nach vorne drücken, Rumpf bleibt stabil.' },
   woodchop_fit: { name: 'Holzhacker (Kabel)', type: 'cable', tip: 'Diagonal von oben nach unten ziehen, Kraft aus Hüfte und Rumpf.' },
-  bike:      { name: 'Fahrrad-Ergometer', type: 'cardio', tip: 'Sattel so hoch, dass das Knie unten leicht gebeugt ist.' },
-  rower:     { name: 'Rudergerät', type: 'cardio', tip: 'Reihenfolge: Beine – Oberkörper – Arme, zurück umgekehrt. Kraft kommt aus den Beinen.' },
-  treadmill: { name: 'Laufband mit Steigung', type: 'cardio', tip: 'Nicht am Geländer festhalten, aufrecht gehen.' },
-  crosstrainer: { name: 'Crosstrainer', type: 'cardio', tip: 'Aufrecht stehen, Arme aktiv mitarbeiten lassen.' },
+  rdl_fit:   { name: 'Rumänisches Kreuzheben (Kurzhanteln)', type: 'free', tip: 'Hüfte nach hinten, Rücken gerade, Hanteln am Bein entlang.' },
+  db_row_bent: { name: 'Rudern vorgebeugt (Kurzhanteln)', type: 'free', tip: 'Oberkörper nach vorne geneigt, Hanteln zum Bauch ziehen.' },
 };
 
-// Fitness-Block am Ende jedes Trainings (ca. 10–12 Min.) – wechselt jedes Training.
-// value: was du einträgst, um dich zu verbessern (z. B. Runden oder Meter)
+// Fitness-Block am Ende jedes Trainings (ca. 12 Min.) – ohne Cardio-Geräte, nur Kurzhanteln und Kabelzug.
+// Wechselt jedes Training. value: was du einträgst, um dich zu verbessern.
 const FITNESS = [
   { id: 'circuit1', kind: 'Zirkel', name: 'Kraft-Ausdauer-Zirkel', value: 'Runden',
     detail: '3–4 Runden: je 40 Sek. Arbeit, 20 Sek. Pause. Nach jeder Runde 1 Min. Pause.',
     items: [{ id: 'thruster', dose: '40 Sek.' }, { id: 'cable_row_stand', dose: '40 Sek.' }, { id: 'db_swing', dose: '40 Sek.' }, { id: 'farmer', dose: '40 Sek.' }] },
-  { id: 'bike_int', kind: 'Intervalle', name: 'Intervalle auf dem Rad', value: 'Intervalle',
-    detail: '3 Min. locker, dann 8 × (30 Sek. schnell / 60 Sek. locker).',
-    items: [{ id: 'bike', dose: '8 × 30 Sek.' }] },
+  { id: 'emom', kind: 'Intervalle', name: 'EMOM 12 Minuten', value: 'Runden geschafft',
+    detail: 'Jede volle Minute startest du neu: Minute 1 Swings, Minute 2 Thruster, immer im Wechsel. Rest der Minute = Pause.',
+    items: [{ id: 'db_swing', dose: '12 Wdh. (ungerade Minuten)' }, { id: 'thruster', dose: '8 Wdh. (gerade Minuten)' }] },
   { id: 'circuit2', kind: 'Zirkel', name: 'Rumpf- und Ganzkörper-Zirkel', value: 'Runden',
     detail: '3 Runden: 10–12 Wdh. pro Übung, möglichst ohne Pause, 1 Min. Pause nach jeder Runde.',
     items: [{ id: 'goblet_fit', dose: '12 Wdh.' }, { id: 'db_push_press', dose: '10 Wdh.' }, { id: 'pallof_fit', dose: '10 je Seite' }, { id: 'woodchop_fit', dose: '10 je Seite' }] },
-  { id: 'cross', kind: 'Ausdauer', name: 'Ausdauer auf dem Crosstrainer', value: 'Minuten',
-    detail: '12–15 Min. zügig, aber so, dass du noch in ganzen Sätzen sprechen kannst.',
-    items: [{ id: 'crosstrainer', dose: '12–15 Min.' }] },
-  { id: 'row_int', kind: 'Intervalle', name: 'Rudergerät-Intervalle', value: 'Meter gesamt',
-    detail: '2 Min. locker, dann 6 × 250 m zügig mit je 1 Min. Pause.',
-    items: [{ id: 'rower', dose: '6 × 250 m' }] },
-  { id: 'incline', kind: 'Ausdauer', name: 'Steigung gehen', value: 'Minuten',
-    detail: '12 Min. zügig gehen bei 10–12 % Steigung – Puls hoch, Gelenke geschont.',
-    items: [{ id: 'treadmill', dose: '12 Min.' }] },
+  { id: 'complex', kind: 'Hantel-Komplex', name: 'Kurzhantel-Komplex', value: 'Runden',
+    detail: 'Die 4 Übungen direkt hintereinander, ohne die Hanteln abzulegen = 1 Runde. 1 Min. Pause, 4–5 Runden. Leichte Hanteln!',
+    items: [{ id: 'rdl_fit', dose: '8 Wdh.' }, { id: 'db_row_bent', dose: '8 Wdh.' }, { id: 'db_push_press', dose: '8 Wdh.' }, { id: 'goblet_fit', dose: '8 Wdh.' }] },
+  { id: 'tabata', kind: 'Intervalle', name: 'Tabata-Intervalle', value: 'Wdh. gesamt',
+    detail: '2 Blöcke à 4 Min.: 8 × (20 Sek. Vollgas / 10 Sek. Pause), dazwischen 1 Min. Pause. Zähl deine Wiederholungen.',
+    items: [{ id: 'db_swing', dose: 'Block 1: 8 × 20 Sek.' }, { id: 'thruster', dose: 'Block 2: 8 × 20 Sek.' }] },
+  { id: 'carry', kind: 'Rumpf & Griff', name: 'Tragen & Rumpf-Zirkel', value: 'Runden',
+    detail: '3–4 Runden ohne lange Pausen, 1 Min. Pause nach jeder Runde.',
+    items: [{ id: 'farmer', dose: '40 m bzw. 45 Sek.' }, { id: 'woodchop_fit', dose: '10 je Seite' }, { id: 'cable_row_stand', dose: '15 Wdh.' }, { id: 'pallof_fit', dose: '10 je Seite' }] },
+  // ältere Blöcke (nur für alte Verlaufseinträge)
+  { id: 'bike_int', legacy: true, kind: 'Intervalle', name: 'Intervalle auf dem Rad', value: 'Intervalle', detail: '', items: [] },
+  { id: 'cross', legacy: true, kind: 'Ausdauer', name: 'Crosstrainer', value: 'Minuten', detail: '', items: [] },
+  { id: 'row_int', legacy: true, kind: 'Intervalle', name: 'Rudergerät-Intervalle', value: 'Meter gesamt', detail: '', items: [] },
+  { id: 'incline', legacy: true, kind: 'Ausdauer', name: 'Steigung gehen', value: 'Minuten', detail: '', items: [] },
 ];
 
-// Aufwärmen (ca. 5–7 Min.) – Mobilität und Aktivierung vor dem Krafttraining
+// Aufwärmen (ca. 5–7 Min.) – ohne Cardio-Geräte: Mobilität und leichte Aktivierung
 const WARMUP = [
-  '3–5 Min. Rad, Crosstrainer oder Rudergerät locker',
   'Armkreisen vor und zurück, je 10×',
   'Hüftkreisen und Ausfallschritt mit Rotation, je 5 pro Seite',
+  '15 leichte Goblet Squats mit einer leichten Kurzhantel',
+  '15 leichte Face Pulls oder Rudern am Kabel',
   '1–2 leichte Sätze bei der ersten Übung (siehe Hinweis)',
 ];
+

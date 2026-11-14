@@ -164,7 +164,7 @@ function viewWorkout() {
       <div class="body">${done} von ${total} Sätzen</div><div class="progress"><span style="width:${(100 * done / total) || 0}%"></span></div></div>
       <div class="value">${mins} Min.</div></div>`), 'Anstrengend, aber sauber: Am Satzende sollten noch 2–3 Wdh. gehen. Haken setzen = Satz fertig, danach startet die Pause.');
   out += section('1 · Aufwärmen (5–7 Min.)', list(WARMUP.map((w) => `<div class="cell"><span class="cell-icon tint-orange">${ICON.flame}</span><div class="grow body">${esc(w)}</div></div>`).join('')),
-    'Bringt Puls, Gelenke und Muskeln auf Betriebstemperatur – senkt das Verletzungsrisiko.');
+    'Ohne Cardio-Gerät: bringt Gelenke und Muskeln auf Betriebstemperatur und senkt das Verletzungsrisiko.');
 
   out += c.exercises.map((e, i) => {
     const E = ex(e.exId); const s = e.suggestion;
@@ -209,7 +209,7 @@ function viewWorkout() {
       + `<div class="cell"><div class="grow"><div class="body">${esc(fb.value)}</div><div class="sub">${lastV != null ? `Letztes Mal: ${fmtKg(lastV)} – versuch etwas mehr!` : 'Trag ein, was du geschafft hast'}</div></div>
           <input type="text" inputmode="decimal" class="fit-input" id="fit-value" value="${c.fitness.value ?? ''}" placeholder="${lastV != null ? fmtKg(lastV) : '–'}" aria-label="${esc(fb.value)}">
           <button class="check ${c.fitness.done ? 'on' : ''}" data-action="toggle-fitness" aria-label="Fitness-Block erledigt">${ICON.check}</button></div>`)
-      + `<p class="section-footer">Hier geht es um Ausdauer, Kraftausdauer und einen stabilen Rumpf – nicht um Maximalgewicht. Wähle leichtere Gewichte und bleib in Bewegung.</p></section>`;
+      + `<p class="section-footer">Hier geht es um Kondition, Kraftausdauer und einen stabilen Rumpf – nicht um Maximalgewicht. Wähle leichte Hanteln, mit denen du sauber in Bewegung bleibst. Tipp: Stell dir einen Timer auf dem iPhone.</p></section>`;
   }
   out += `<button class="btn-filled" data-action="finish">Training beenden</button>
     <button class="btn-plain destructive" data-action="discard">Training verwerfen</button>`;
@@ -361,7 +361,7 @@ function viewPlan() {
       + feat(ICON.flame, 'orange', 'Anstrengend, aber nicht bis zum Versagen', 'Jeder Satz endet mit 2–3 Wdh. Reserve. Das reicht für Muskelaufbau, schont Gelenke und lässt Energie für den Fitness-Teil.')
       + feat(ICON.sparkle, 'purple', 'Dehnung unter Last', 'Übungen, die den Muskel in gedehnter Position belasten, bauen nachweislich mehr auf: Beinbeuger sitzend statt liegend, Trizeps über Kopf, Schrägbank-Curls, RDL.')
       + feat(ICON.clock, 'blue', 'Lange Pausen bei Grundübungen', `Grundübungen ${state.settings.rest + 60} Sek., Isolationsübungen ${state.settings.rest} Sek. – mehr Pause heißt mehr Leistung im nächsten Satz.`)
-      + feat(ICON.heart, 'red', 'Fitness in jedem Training', 'Ca. 12 Min. im Wechsel: Zirkel (Kraftausdauer), Intervalle und Ausdauer. Verbessert Kondition, Herz-Kreislauf und Alltagsfitness.')
+      + feat(ICON.heart, 'red', 'Fitness in jedem Training', 'Ca. 12 Min. ohne Cardio-Geräte: Zirkel, EMOM, Tabata und Hantel-Komplexe mit Kurzhanteln und Kabel. Bringt den Puls hoch und verbessert Kondition und Kraftausdauer.')
       + feat(ICON.info, 'blue', 'Stabiler Rumpf & beweglich', 'Rumpfübungen wie Pallof Press, Holzhacker und Farmer\'s Walk plus Mobilität beim Aufwärmen – für eine gute Haltung und einen gesunden Rücken.')),
       'Muskelaufbau inspiriert von evidenzbasierten Coaches wie Jeff Nippard, Brad Schoenfeld und Mike Israetel, ergänzt um Ausdauer und Kraftausdauer – angepasst an 2× 60 Min. pro Woche.')
     + section('So passt sich dein Plan an', list(
