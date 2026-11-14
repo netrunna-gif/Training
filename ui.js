@@ -1,5 +1,5 @@
 'use strict';
-const APP_VERSION = '11';
+const APP_VERSION = '12';
 /* Oberfläche im iOS-Stil: Large Titles, gruppierte Listen, Systemfarben, SF-ähnliche Symbole */
 
 /* ================= Symbole ================= */
@@ -177,7 +177,7 @@ function viewWorkout() {
     const rows = e.sets.map((set, j) => `
       <div class="set ${set.done ? 'done' : ''}">
         <span class="set-no">${j + 1}</span>
-        <input type="text" inputmode="decimal" value="${set.w ?? ''}" placeholder="–" data-field="w" data-i="${i}" data-j="${j}" aria-label="Gewicht Satz ${j + 1}">
+        <input type="text" inputmode="decimal" value="${set.w == null ? '' : fmtKg(set.w)}" placeholder="–" data-field="w" data-i="${i}" data-j="${j}" aria-label="Gewicht Satz ${j + 1}">
         <input type="text" inputmode="numeric" value="${set.r ?? ''}" placeholder="${s.reps}" data-field="r" data-i="${i}" data-j="${j}" aria-label="${E.unit} Satz ${j + 1}">
         <button class="check" data-action="toggle-set" data-i="${i}" data-j="${j}" aria-label="Satz abhaken">${ICON.check}</button>
       </div>`).join('');
@@ -601,8 +601,20 @@ document.addEventListener('input', (ev) => {
   const t = ev.target;
   if (t.id === 'fit-value' && state.current?.fitness) { state.current.fitness.value = parseNum(t.value); save(); return; }
   if (t.dataset.field && state.current) {
-    const set = state.current.exercises[+t.dataset.i].sets[+t.dataset.j];
+    const i = +t.dataset.i, j = +t.dataset.j;
+    const sets = state.current.exercises[i].sets;
+    const set = sets[j];
+    const before = set[t.dataset.field];
     set[t.dataset.field] = parseNum(t.value);
+    // Gewicht geändert -> in die folgenden, noch offenen Sätze mit gleichem Gewicht übernehmen
+    if (t.dataset.field === 'w') {
+      for (let k = j + 1; k < sets.length; k++) {
+        if (sets[k].done || (sets[k].w !== before && sets[k].w != null)) continue;
+        sets[k].w = set.w;
+        const inp = document.querySelector(`[data-field="w"][data-i="${i}"][data-j="${k}"]`);
+        if (inp && inp !== t) inp.value = set.w == null ? '' : fmtKg(set.w);
+      }
+    }
     save();
   }
 });

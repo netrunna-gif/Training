@@ -1,6 +1,6 @@
 // Offline-Unterstützung: App-Dateien zwischenspeichern.
 // Bei Änderungen an der App die Versionsnummer erhöhen.
-const CACHE = 'gymplan-v11';
+const CACHE = 'gymplan-v12';
 const ASSETS = ['./', 'index.html', 'styles.css', 'data.js', 'app.js', 'ui.js', 'figures.js', 'manifest.webmanifest',
   'icons/icon.svg', 'icons/app-180.png', 'icons/app-192.png', 'icons/app-512.png'];
 
