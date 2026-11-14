@@ -327,3 +327,30 @@ input.inc {
 .check.on { background: var(--green); border-color: var(--green); color: #fff; }
 .cardio-done .headline { color: var(--label2); }
 .cell-button .sym { margin-right: 2px; }
+
+/* Übungsfiguren */
+.fig { display: block; width: 100%; height: auto; overflow: hidden; }
+.fig .limb { stroke: var(--label); stroke-width: 7; stroke-linecap: round; fill: none; }
+.fig .limb.torso { stroke-width: 9; }
+.fig .limb.far { stroke: var(--label3); }
+.fig .head { fill: var(--label); }
+.fig .eq { fill: var(--label3); opacity: .55; }
+.fig .eq-line { stroke: var(--label3); opacity: .55; stroke-width: 5; stroke-linecap: round; }
+.fig .wt { fill: var(--orange); }
+.fig .wt-hub { fill: var(--bg2); }
+.fig .wt-line { stroke: var(--orange); stroke-width: 5; stroke-linecap: round; }
+.fig .cable { stroke: var(--label3); stroke-width: 1.5; }
+.fig .ground { stroke: var(--sep); stroke-width: 1; }
+.thumb { width: 54px; height: 48px; flex: none; border-radius: 8px; background: var(--fill); padding: 2px; border: 0; display: block; cursor: pointer; }
+.thumb .fig { width: 100%; height: 100%; }
+.thumb .fig .limb { stroke-width: 8; }
+.thumb .fig .ground { display: none; }
+.slot-cell .thumb { margin-top: 2px; }
+.fig-cell { cursor: pointer; padding-top: 6px; padding-bottom: 6px; }
+.fig-box { width: 44%; max-width: 180px; height: 130px; flex: none; background: var(--fill); border-radius: 10px; padding: 6px; }
+.fig-box .fig { width: 100%; height: 100%; }
+.fig-info .body { font-size: 15px; margin: 2px 0 6px; }
+.howto-fig { background: var(--bg2); border-radius: 14px; padding: 12px; margin: 4px 0 14px; }
+.howto-fig .fig { height: 240px; }
+.sheet-card .title2 { margin-bottom: 2px; }
+.btn-filled.yt { display: flex; align-items: center; justify-content: center; text-decoration: none; background: var(--red); }

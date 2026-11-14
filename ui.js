@@ -22,6 +22,7 @@ const ICON = {
   trophy: svg('<path d="M8 4.5h8v5a4 4 0 0 1-8 0zM8 6.5H5v1.5a3 3 0 0 0 3 3M16 6.5h3v1.5a3 3 0 0 1-3 3M12 13.5V17M8.5 20h7M9.5 17h5v3h-5z"/>'),
   heart: svg('<path d="M12 20s-7.5-4.4-7.5-10A4.3 4.3 0 0 1 12 7.4 4.3 4.3 0 0 1 19.5 10c0 5.6-7.5 10-7.5 10z"/>'),
   eyeoff: svg('<path d="M3.5 3.5l17 17M10.6 6.1A9.6 9.6 0 0 1 12 6c5.5 0 9 6 9 6a15 15 0 0 1-2.7 3.4M6.6 6.7C4.2 8.2 3 12 3 12s3.5 6 9 6a8.6 8.6 0 0 0 4-.9M9.9 9.9a3 3 0 0 0 4.2 4.2"/>'),
+  play: svg('<circle cx="12" cy="12" r="9"/><path d="M10 8.5v7l5.5-3.5z" fill="currentColor"/>'),
   clock: svg('<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>'),
 };
 
@@ -119,7 +120,7 @@ function viewHome() {
     const prevId = lastS && lastExerciseInSlot(lastS, slot);
     const isChange = prevId && prevId !== id;
     const wt = s.weight ? fmtKg(s.weight) + ' kg' : '–';
-    return `<div class="cell"><div class="grow"><div class="body">${esc(e.name)} ${badge(s.status)}</div>
+    return `<div class="cell cell-link" data-action="howto" data-ex="${id}"><span class="thumb">${FIG.svg(id)}</span><div class="grow"><div class="body">${esc(e.name)} ${badge(s.status)}</div>
       <div class="sub">${esc(slot.label)}${isChange ? ' · <span class="tint-purple">neu diese Woche</span>' : ''}</div></div>
       <div class="value"><div>${wt}</div><div class="sub">${e.sets} × ${e.reps[0]}–${e.reps[1]}</div></div></div>`;
   }).join('');
@@ -180,6 +181,10 @@ function viewWorkout() {
         <div class="cell"><div class="grow"><div class="headline">${esc(E.name)}${complete ? ` <span class="done-mark">${ICON.check}</span>` : ''}</div>
           <div class="sub">Ziel ${E.sets} × ${E.reps[0]}–${E.reps[1]} ${E.unit}.${last ? ' · Zuletzt ' + esc(setsTxt(last.sets)) : ''}</div></div>
           <button class="circle-btn" data-action="swap" data-i="${i}" aria-label="Übung tauschen">${ICON.swap}</button></div>
+        <button class="cell fig-cell" data-action="howto" data-ex="${e.exId}">
+          <div class="fig-box">${FIG.svg(e.exId, { anim: true })}</div>
+          <div class="grow fig-info"><div class="sub">Trainiert</div><div class="body strong">${esc(FIG.def(e.exId)?.muscles || '')}</div>
+          <span class="btn-link">${ICON.info}So geht's</span></div></button>
         <div class="cell hint ${s.status}">${hintIcon}<span>${esc(s.note)}</span></div>
         ${i === 0 && warmupSets(e.exId, s.weight) ? `<div class="cell hint">${ICON.flame}<span>Aufwärmen: ${warmupSets(e.exId, s.weight).map((x) => `${fmtKg(x.w)} kg × ${x.r}`).join(', danach ')} – nicht abhaken.</span></div>` : ''}
         ${plateau(e.exId) ? `<div class="cell hint down">${ICON.repeat}<span>3 Einheiten ohne Fortschritt – probier eine andere Übung (⇄).</span></div>` : ''}
@@ -187,8 +192,7 @@ function viewWorkout() {
         ${rows}
         <div class="cell cell-actions">
           <button class="btn-link" data-action="add-set" data-i="${i}">${ICON.plus}Satz</button>
-          <button class="btn-link" data-action="tip" data-i="${i}">${ICON.info}Technik</button></div>
-        <div class="cell tech hidden" id="tip-${i}"><span class="sub">${esc(E.tip)}</span></div>
+          <button class="btn-link" data-action="howto" data-ex="${e.exId}">${ICON.play}Anleitung</button></div>
       </div></section>`;
   }).join('');
   const cd = cardioById(c.cardio?.id);
@@ -326,7 +330,7 @@ function viewPlan() {
     const nOn = slot.options.filter((id) => !state.excluded[id]).length;
     const variants = slot.options.map((id) => `<label class="variant"><span>${esc(ex(id).name)}</span>
         <input type="checkbox" class="switch" data-action="exclude" data-ex="${id}" ${state.excluded[id] ? '' : 'checked'}></label>`).join('');
-    return `<div class="cell slot-cell"><div class="grow">
+    return `<div class="cell slot-cell"><button class="thumb" data-action="howto" data-ex="${cur}" aria-label="Anleitung">${FIG.svg(cur)}</button><div class="grow">
         <div class="sub">${esc(slot.label)} · ${slot.main ? 'Grundübung' : 'wechselt wöchentlich'}${ov ? ' · manuell gewählt' : ''}</div>
         <label class="slot-select"><select data-action="override" data-slot="${slot.id}">${opts}</select>${ICON.chevron}</label>
         <div class="sub">${E.sets} × ${E.reps[0]}–${E.reps[1]} ${E.unit}. · Steigerung
@@ -505,7 +509,7 @@ document.addEventListener('click', (ev) => {
       closeSheet(); save(); render(); toast('Wird nicht mehr vorgeschlagen');
       break;
     }
-    case 'tip': $('#tip-' + i).classList.toggle('hidden'); break;
+    case 'howto': openHowto(t.dataset.ex); break;
     case 'swap': openSwap(i); break;
     case 'finish': syncInputs(); if (confirm('Training beenden und speichern?')) finishWorkout(); break;
     case 'discard': if (confirm('Training wirklich verwerfen? Die Sätze gehen verloren.')) { state.current = null; save(); stopRest(); go('home'); } break;
@@ -597,13 +601,29 @@ function openSwap(i) {
     <div class="grabber"></div>
     <div class="sheet-nav"><span></span><div class="headline">Übung tauschen</div><button class="btn-link strong" data-action="close-sheet">Abbrechen</button></div>
     <p class="sub center">Gerät besetzt oder Lust auf Abwechslung? Alternative für „${esc(slot.label)}“:</p>
-    ${list(opts.map((id) => `<div class="cell"><div class="grow"><div class="body">${esc(ex(id).name)}</div>
+    ${list(opts.map((id) => `<div class="cell"><span class="thumb">${FIG.svg(id)}</span><div class="grow"><div class="body">${esc(ex(id).name)}</div>
       <div class="sub">${ex(id).sets} × ${ex(id).reps[0]}–${ex(id).reps[1]} · Vorschlag ${fmtKg(suggestion(id).weight)} kg</div></div>
       <div class="swap-btns"><button class="btn-small gray" data-action="pick-swap" data-i="${i}" data-ex="${id}">Heute</button>
       <button class="btn-small" data-action="pick-swap" data-i="${i}" data-ex="${id}" data-keep="1">Bis Wechsel</button></div></div>`).join(''))}
     <p class="section-footer">„Heute“ tauscht nur für dieses Training. „Bis Wechsel“ behält sie, bis dieser Platz im Plan regulär wechselt.</p>
     <div class="section" style="margin-top:20px">${list(`<button class="cell cell-button destructive" data-action="hide-ex" data-i="${i}">${ICON.eyeoff}&nbsp;„${esc(ex(e.exId).name)}“ nie mehr vorschlagen</button>`)}
     <p class="section-footer">Für Übungen, die du nicht magst oder die es in deinem Studio nicht gibt. Im Tab „Plan“ unter „Varianten“ wieder einschaltbar.</p></div>`;
+  $('#sheet').classList.add('show');
+}
+function openHowto(exId) {
+  const E = ex(exId); const d = FIG.def(exId);
+  const yt = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(E.name.replace(/[()]/g, '') + ' Übung Ausführung');
+  const typ = { free: 'Freihantel', machine: 'Geführte Maschine', cable: 'Kabelzug' }[E.type] || '';
+  $('#sheet-body').innerHTML = `
+    <div class="grabber"></div>
+    <div class="sheet-nav"><span></span><div class="headline">Anleitung</div><button class="btn-link strong" data-action="close-sheet">Fertig</button></div>
+    <div class="howto-fig">${FIG.svg(exId, { anim: true })}</div>
+    <div class="title2 center">${esc(E.name)}</div>
+    <p class="sub center">${esc(typ)}${d ? ' · ' + esc(d.muscles) : ''}</p>
+    ${d ? section('So geht\'s', list(d.steps.map((st, k) => `<div class="cell"><span class="step-no">${k + 1}</span><div class="grow body">${esc(st)}</div></div>`).join(''))) : ''}
+    ${E.tip ? section('Tipp', list(`<div class="cell"><span class="cell-icon tint-orange">${ICON.sparkle}</span><div class="grow body">${esc(E.tip)}</div></div>`)) : ''}
+    <a class="btn-filled yt" href="${yt}" target="_blank" rel="noopener">${ICON.play}&nbsp;Videos auf YouTube ansehen</a>
+    <p class="section-footer center">Unsicher? Frag das McFit-Personal, dir die Übung einmal zu zeigen.</p>`;
   $('#sheet').classList.add('show');
 }
 function closeSheet() { $('#sheet').classList.remove('show'); }
