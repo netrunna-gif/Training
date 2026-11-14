@@ -421,6 +421,79 @@ const FIG = (() => {
       muscles: 'Po, Beinbeuger',
       steps: ['Mit dem Rücken zum Kabelzug, Seil zwischen den Beinen greifen, zwei Schritte vor.', 'Hüfte weit nach hinten schieben, Rücken gerade.', 'Hüfte nach vorne bringen und oben den Po fest anspannen.'],
     },
+    // ---------- Fitness ----------
+    thruster: {
+      a: { hip: [84, 120], torso: 60, ankle: [100, 150], foot: 0, hand: ['s', 10, -4], elbow: 'd' },
+      b: { ...STAND, hand: ['s', 3, -44], elbow: 'd' },
+      muscles: 'Ganzer Körper: Beine, Po, Schultern, Herz-Kreislauf',
+      steps: ['Hanteln auf Schulterhöhe, Füße schulterbreit.', 'Tief in die Kniebeuge gehen.', 'Kraftvoll aufstehen und den Schwung nutzen, um die Hanteln über den Kopf zu drücken.'],
+    },
+    push_press: {
+      a: { hip: [96, 102], torso: 86, ankle: [100, 150], foot: 0, hand: ['s', 10, -4], elbow: 'd' },
+      b: { ...STAND, hand: ['s', 3, -44], elbow: 'd' },
+      muscles: 'Schultern, Trizeps, Beine',
+      steps: ['Hanteln auf Schulterhöhe, aufrecht stehen.', 'Kurz in die Knie federn.', 'Explosiv strecken und die Hanteln über den Kopf drücken.'],
+    },
+    swing: {
+      a: { hip: [86, 96], torso: 30, ankle: [100, 150], foot: 0, hand: ['s', -10, 40], elbow: 'd' },
+      b: { ...STAND, hand: ['s', 42, 4], elbow: 'd' },
+      muscles: 'Po, Beinbeuger, Rumpf, Herz-Kreislauf',
+      steps: ['Hantel mit beiden Händen, Füße etwas breiter als hüftbreit.', 'Hüfte nach hinten schieben, Hantel zwischen die Beine schwingen lassen.', 'Hüfte explosiv nach vorne strecken – die Hantel schwingt bis Brusthöhe.'],
+    },
+    walk: {
+      a: { hip: [100, 94], torso: 88, ankle: [116, 150], foot: 0, ankle2: [84, 148], foot2: -30, hand: ['s', -8, 42], hand2: ['s', 10, 40], elbow: 'd' },
+      b: { hip: [100, 94], torso: 88, ankle: [84, 148], foot: -30, ankle2: [116, 150], foot2: 0, hand: ['s', 10, 40], hand2: ['s', -8, 42], elbow: 'd' },
+      muscles: 'Beine, Herz-Kreislauf',
+      steps: ['Aufrecht gehen, nicht festhalten.', 'Zügiges Tempo wählen.', 'Atmung: etwas außer Puste, aber Sprechen ist noch möglich.'],
+    },
+    farmer: {
+      a: { hip: [100, 94], torso: 90, ankle: [114, 150], foot: 0, ankle2: [86, 148], foot2: -30, hand: ['s', 1, 43], elbow: 'd' },
+      b: { hip: [100, 94], torso: 90, ankle: [86, 148], foot: -30, ankle2: [114, 150], foot2: 0, hand: ['s', 1, 43], elbow: 'd' },
+      muscles: 'Griffkraft, Rumpf, Schultern, Beine',
+      steps: ['Zwei schwere Kurzhanteln greifen, aufrecht hinstellen.', 'Mit kurzen, kontrollierten Schritten gehen.', 'Schultern zurück, Bauch fest, nicht zur Seite kippen.'],
+    },
+    row_stand: {
+      a: { hip: [98, 96], torso: 84, ankle: [104, 150], foot: 0, ankle2: [90, 150], hand: ['s', 42, 14], elbow: 'd' },
+      b: { hip: [98, 96], torso: 88, ankle: [104, 150], foot: 0, ankle2: [90, 150], hand: ['s', 12, 30], elbow: 'b' },
+      props: [{ t: 'cable', from: [186, 70] }],
+      muscles: 'Rücken, Bizeps, Rumpf',
+      steps: ['Vor den Kabelzug stellen, Knie leicht gebeugt.', 'Griff zum Bauch ziehen, Schulterblätter zusammen.', 'Kontrolliert zurück, Rumpf bleibt stabil.'],
+    },
+    pallof: {
+      a: { hip: [100, 94], torso: 90, ankle: [106, 150], foot: 0, ankle2: [94, 150], hand: ['s', 10, 16], elbow: 'd' },
+      b: { hip: [100, 94], torso: 90, ankle: [106, 150], foot: 0, ankle2: [94, 150], hand: ['s', 42, 14], elbow: 'd' },
+      props: [{ t: 'cable', from: [186, 70] }],
+      muscles: 'Rumpf (gegen Verdrehung), Bauch',
+      steps: ['Seitlich zum Kabelzug stellen, Griff mit beiden Händen vor der Brust.', 'Arme gerade nach vorne drücken – der Zug will dich verdrehen, halte dagegen.', '2 Sek. halten, zurück zur Brust. Wiederholungen pro Seite.'],
+    },
+    woodchop: {
+      a: { view: 'front', hip: [100, 92], sw: 13, handL: [66, 30], handR: [72, 34], ankleL: [88, 150], ankleR: [112, 150], elbow: 'out' },
+      b: { view: 'front', hip: [100, 92], sw: 13, handL: [126, 106], handR: [132, 102], ankleL: [88, 150], ankleR: [112, 150], elbow: 'out' },
+      props: [{ t: 'cable', from: [34, 14], at: 'hndL' }],
+      muscles: 'Schräge Bauchmuskeln, Rumpf',
+      steps: ['Seitlich zum Kabelzug, Griff oben mit beiden Händen.', 'Diagonal nach unten zur anderen Seite ziehen – Drehung aus Hüfte und Rumpf.', 'Kontrolliert zurück. Wiederholungen pro Seite.'],
+    },
+    bike: {
+      a: { hip: [86, 98], torso: 66, ankle: [112, 142], foot: 0, ankle2: [100, 120], foot2: 0, hand: [128, 78], elbow: 'd', knee: 'f', knee2: 'f' },
+      b: { hip: [86, 98], torso: 66, ankle: [100, 120], foot: 0, ankle2: [112, 142], foot2: 0, hand: [128, 78], elbow: 'd', knee: 'f', knee2: 'f' },
+      props: [{ t: 'rect', x: 76, y: 100, w: 18, h: 5 }, { t: 'line', x1: 86, y1: 104, x2: 100, y2: 148, w: 5 }, { t: 'line', x1: 106, y1: 132, x2: 130, y2: 80, w: 5 }, { t: 'line', x1: 84, y1: 150, x2: 136, y2: 150, w: 6 }, { t: 'pad', at: 'ank', r: 3 }],
+      muscles: 'Beine, Herz-Kreislauf',
+      steps: ['Sattel so hoch, dass das Knie unten leicht gebeugt ist.', 'Schnelle Phasen: hoher Widerstand oder hohe Trittfrequenz.', 'Lockere Phasen: ganz leicht weitertreten und durchatmen.'],
+    },
+    rower: {
+      a: { hip: [76, 132], torso: 66, ankle: [118, 140], foot: 70, hand: [120, 112], elbow: 'd', knee: 'u' },
+      b: { hip: [54, 132], torso: 108, ankle: [118, 140], foot: 70, hand: ['s', 18, 20], elbow: 'b', knee: 'u' },
+      props: [{ t: 'line', x1: 24, y1: 140, x2: 150, y2: 140, w: 5 }, { t: 'pad', at: 'hip', dy: 4, r: 6 }, { t: 'cable', from: [146, 118] }, { t: 'handle', at: 'hnd', hx: 0, hy: 5, layer: 'front' }],
+      muscles: 'Beine, Rücken, Arme, Herz-Kreislauf',
+      steps: ['Füße festschnallen, Griff mit gestreckten Armen.', 'Zuerst mit den Beinen abdrücken, dann Oberkörper leicht zurück, zuletzt Griff zum Bauch.', 'Zurück in umgekehrter Reihenfolge: Arme, Oberkörper, Beine.'],
+    },
+    cross: {
+      a: { hip: [100, 88], torso: 88, ankle: [116, 140], foot: 0, ankle2: [86, 146], foot2: 0, hand: ['s', 20, 18], hand2: ['s', 4, 30], elbow: 'd' },
+      b: { hip: [100, 88], torso: 88, ankle: [86, 146], foot: 0, ankle2: [116, 140], foot2: 0, hand: ['s', 4, 30], hand2: ['s', 20, 18], elbow: 'd' },
+      props: [{ t: 'line', x1: 70, y1: 150, x2: 140, y2: 150, w: 6 }, { t: 'line', x1: 130, y1: 150, x2: 130, y2: 60, w: 4 }],
+      muscles: 'Ganzer Körper, Herz-Kreislauf',
+      steps: ['Aufrecht auf die Pedale stellen, Griffe locker halten.', 'Gleichmäßig treten, Arme schieben und ziehen aktiv mit.', 'Tempo so, dass du noch in ganzen Sätzen sprechen kannst.'],
+    },
   };
 
   // ---------- Übung -> Muster + Geräte ----------
@@ -487,6 +560,21 @@ const FIG = (() => {
     torso_m: ['torso_rot'],
     crunch_m: ['cable_crunch'],
     backext_m: ['backext'],
+    pallof: ['pallof', [{ t: 'handle', at: 'hnd', layer: 'front' }]],
+    woodchop: ['woodchop'],
+    // Fitness
+    thruster: ['thruster', [db()]],
+    db_push_press: ['push_press', [db()]],
+    db_swing: ['swing', [db()]],
+    farmer: ['farmer', [db()]],
+    cable_row_stand: ['row_stand', [{ t: 'handle', at: 'hnd', hx: 0, hy: 5, layer: 'front' }]],
+    goblet_fit: ['squat', [db()], { hand: ['s', 12, 10] }],
+    pallof_fit: ['pallof', [{ t: 'handle', at: 'hnd', layer: 'front' }]],
+    woodchop_fit: ['woodchop'],
+    bike: ['bike'],
+    rower: ['rower'],
+    treadmill: ['walk', [{ t: 'line', x1: 60, y1: 152, x2: 150, y2: 140, w: 6 }]],
+    crosstrainer: ['cross'],
   };
 
   const cache = {};

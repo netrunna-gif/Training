@@ -354,3 +354,6 @@ input.inc {
 .howto-fig .fig { height: 240px; }
 .sheet-card .title2 { margin-bottom: 2px; }
 .btn-filled.yt { display: flex; align-items: center; justify-content: center; text-decoration: none; background: var(--red); }
+.fit-input { width: 64px; height: 36px; border: 0; border-radius: 8px; background: var(--fill); color: var(--label); font: inherit; font-weight: 600; text-align: center; -webkit-appearance: none; }
+.fit-input:focus { outline: 2px solid var(--blue); outline-offset: -2px; }
+.mini-stats { flex-wrap: wrap; gap: 8px 20px; }

@@ -110,7 +110,8 @@ function viewHome() {
       <div class="grow"><div class="title3">${Math.min(thisWeek, 9)} von 2 Trainings</div>
       <div class="sub">${thisWeek >= 2 ? 'Wochenziel erreicht 🎉' : 'Wochenziel: 2× Ganzkörper'}</div>
       <div class="mini-stats"><div><b>${state.sessions.length}</b><span>Gesamt</span></div>
-      <div><b>${weekStreak()}</b><span>Wochen in Folge</span></div></div></div></div>`));
+      <div><b>${weekStreak()}</b><span>Wochen in Folge</span></div>
+      <div><b>${state.sessions.filter((s) => s.fitness).length}</b><span>Fitness-Blöcke</span></div></div></div></div>`));
 
   const count = workoutCount(w);
   const lastS = lastSessionOf(w);
@@ -125,16 +126,16 @@ function viewHome() {
       <div class="value"><div>${wt}</div><div class="sub">${e.sets} × ${e.reps[0]}–${e.reps[1]}</div></div></div>`;
   }).join('');
   const other = w === 'A' ? 'B' : 'A';
-  const cardio = cardioFor(state.sessions.length);
-  const cardioRow = `<div class="cell"><span class="cell-icon tint-red">${ICON.heart}</span><div class="grow"><div class="body">${esc(cardio.name)}</div>
-      <div class="sub">Cardio-Finisher (optional) · ${esc(cardio.detail)}</div></div></div>`;
+  const fit = fitnessFor(state.sessions.length);
+  const cardioRow = `<div class="cell cell-link" data-action="howto" data-ex="${fit.items[0].id}"><span class="cell-icon tint-red">${ICON.heart}</span><div class="grow"><div class="body">Fitness: ${esc(fit.name)}</div>
+      <div class="sub">${esc(fit.kind)} · ca. 12 Min. · ${fit.items.map((it) => esc(exInfo(it.id).name)).join(', ')}</div></div></div>`;
   out += section('Nächstes Training', list(`<div class="cell"><div class="grow">
         <div class="title2">${esc(plan.name)}</div><div class="sub">${esc(plan.focus)}</div></div>
         <span class="pill">Woche ${count + 1}</span></div>${rows}${cardioRow}`)
     + `<button class="btn-filled" data-action="start" data-w="${w}">Training starten</button>
        <button class="btn-plain" data-action="start" data-w="${other}">Stattdessen ${esc(WORKOUTS[other].name)}</button>`,
     (changed ? `${changed} Übung${changed > 1 ? 'en' : ''} gegenüber letzter Woche gewechselt. ` : '')
-    + 'Aufwärmen: 5–8 Min. Crosstrainer oder Rad, dann bei der ersten Übung 1–2 leichte Sätze. Dauer ca. 55–60 Min.');
+    + 'Ablauf: 5–7 Min. Aufwärmen · ca. 40 Min. Kraft · ca. 12 Min. Fitness = ca. 60 Min.');
   return out;
 }
 
@@ -161,7 +162,9 @@ function viewWorkout() {
   const total = c.exercises.reduce((n, e) => n + e.sets.length, 0);
   let out = section('', list(`<div class="cell"><span class="cell-icon tint-blue">${ICON.clock}</span><div class="grow">
       <div class="body">${done} von ${total} Sätzen</div><div class="progress"><span style="width:${(100 * done / total) || 0}%"></span></div></div>
-      <div class="value">${mins} Min.</div></div>`), 'Jeder Satz bis kurz vors Muskelversagen – 1–2 Wdh. sollten noch gehen. Haken setzen = Satz fertig, danach startet die Pause.');
+      <div class="value">${mins} Min.</div></div>`), 'Anstrengend, aber sauber: Am Satzende sollten noch 2–3 Wdh. gehen. Haken setzen = Satz fertig, danach startet die Pause.');
+  out += section('1 · Aufwärmen (5–7 Min.)', list(WARMUP.map((w) => `<div class="cell"><span class="cell-icon tint-orange">${ICON.flame}</span><div class="grow body">${esc(w)}</div></div>`).join('')),
+    'Bringt Puls, Gelenke und Muskeln auf Betriebstemperatur – senkt das Verletzungsrisiko.');
 
   out += c.exercises.map((e, i) => {
     const E = ex(e.exId); const s = e.suggestion;
@@ -176,7 +179,7 @@ function viewWorkout() {
         <input type="text" inputmode="numeric" value="${set.r ?? ''}" placeholder="${s.reps}" data-field="r" data-i="${i}" data-j="${j}" aria-label="${E.unit} Satz ${j + 1}">
         <button class="check" data-action="toggle-set" data-i="${i}" data-j="${j}" aria-label="Satz abhaken">${ICON.check}</button>
       </div>`).join('');
-    return `<section class="section" id="ex-${i}"><h2 class="section-header">${i + 1}. ${esc(slot?.label || '')}</h2>
+    return `<section class="section" id="ex-${i}"><h2 class="section-header">${i === 0 ? '2 · Kraft – ' : ''}${i + 1}. ${esc(slot?.label || '')}</h2>
       <div class="list ${complete ? 'complete' : ''}">
         <div class="cell"><div class="grow"><div class="headline">${esc(E.name)}${complete ? ` <span class="done-mark">${ICON.check}</span>` : ''}</div>
           <div class="sub">Ziel ${E.sets} × ${E.reps[0]}–${E.reps[1]} ${E.unit}.${last ? ' · Zuletzt ' + esc(setsTxt(last.sets)) : ''}</div></div>
@@ -195,11 +198,19 @@ function viewWorkout() {
           <button class="btn-link" data-action="howto" data-ex="${e.exId}">${ICON.play}Anleitung</button></div>
       </div></section>`;
   }).join('');
-  const cd = cardioById(c.cardio?.id);
-  if (cd) out += section('Cardio-Finisher · optional', list(`<div class="cell ${c.cardio.done ? 'cardio-done' : ''}"><span class="cell-icon tint-red">${ICON.heart}</span>
-      <div class="grow"><div class="headline">${esc(cd.name)}</div><div class="sub">${esc(cd.detail)}</div></div>
-      <button class="check ${c.cardio.done ? 'on' : ''}" data-action="toggle-cardio" aria-label="Cardio erledigt">${ICON.check}</button></div>`),
-      'Für Ausdauer und Fitness. Hast du keine Zeit mehr, lass ihn weg – das Krafttraining ist wichtiger.');
+  const fb = fitnessById(c.fitness?.id);
+  if (fb) {
+    const lastV = lastFitnessValue(fb.id);
+    out += `<section class="section" id="fitness"><h2 class="section-header">3 · Fitness – ${esc(fb.kind)} (ca. 12 Min.)</h2>` + list(
+      `<div class="cell ${c.fitness.done ? 'cardio-done' : ''}"><span class="cell-icon tint-red">${ICON.heart}</span>
+        <div class="grow"><div class="headline">${esc(fb.name)}</div><div class="sub">${esc(fb.detail)}</div></div></div>`
+      + fb.items.map((it) => `<button class="cell cell-link" data-action="howto" data-ex="${it.id}"><span class="thumb">${FIG.svg(it.id, { anim: true })}</span>
+          <div class="grow"><div class="body">${esc(exInfo(it.id).name)}</div><div class="sub">${esc(it.dose)}</div></div>${ICON.chevron}</button>`).join('')
+      + `<div class="cell"><div class="grow"><div class="body">${esc(fb.value)}</div><div class="sub">${lastV != null ? `Letztes Mal: ${fmtKg(lastV)} – versuch etwas mehr!` : 'Trag ein, was du geschafft hast'}</div></div>
+          <input type="text" inputmode="decimal" class="fit-input" id="fit-value" value="${c.fitness.value ?? ''}" placeholder="${lastV != null ? fmtKg(lastV) : '–'}" aria-label="${esc(fb.value)}">
+          <button class="check ${c.fitness.done ? 'on' : ''}" data-action="toggle-fitness" aria-label="Fitness-Block erledigt">${ICON.check}</button></div>`)
+      + `<p class="section-footer">Hier geht es um Ausdauer, Kraftausdauer und einen stabilen Rumpf – nicht um Maximalgewicht. Wähle leichtere Gewichte und bleib in Bewegung.</p></section>`;
+  }
   out += `<button class="btn-filled" data-action="finish">Training beenden</button>
     <button class="btn-plain destructive" data-action="discard">Training verwerfen</button>`;
   return out;
@@ -237,8 +248,9 @@ function viewSummary() {
 }
 
 function cardioCell(s) {
-  const cd = s.cardio && cardioById(s.cardio);
-  return cd ? `<div class="cell"><span class="cell-icon tint-red">${ICON.heart}</span><div class="grow"><div class="body">${esc(cd.name)}</div><div class="sub">Cardio-Finisher erledigt</div></div></div>` : '';
+  const fb = s.fitness && fitnessById(s.fitness.id);
+  return fb ? `<div class="cell"><span class="cell-icon tint-red">${ICON.heart}</span><div class="grow"><div class="body">Fitness: ${esc(fb.name)}</div>
+    <div class="sub">${s.fitness.value != null ? `${fmtKg(s.fitness.value)} ${esc(fb.value)}` : 'erledigt'}</div></div></div>` : '';
 }
 
 function empty(icon, title, sub) {
@@ -272,7 +284,7 @@ function viewSession() {
     s.exercises.map((e) => section(esc(ex(e.exId)?.name || e.exId) + (s.prs?.includes(e.exId) ? ' 🏆' : ''),
       list(e.sets.map((x, j) => `<div class="cell"><div class="grow"><div class="body">Satz ${j + 1}</div></div>
         <div class="value strong">${x.w ? fmtKg(x.w) + ' kg × ' : ''}${x.r} ${ex(e.exId)?.unit || ''}.</div></div>`).join('')))).join('') +
-    (s.cardio ? section('Cardio', list(cardioCell(s))) : '') +
+    (s.fitness ? section('Fitness', list(cardioCell(s))) : '') +
     section('', list(`<button class="cell cell-button destructive" data-action="delete-session" data-id="${s.id}">Training löschen</button>`));
 }
 
@@ -345,12 +357,13 @@ function viewPlan() {
       `Ergänzungsübungen wechseln jede Woche, Grundübungen alle ${state.settings.mainEvery} Wochen (versetzt). Unter „Varianten“ schaltest du Übungen aus, die du nicht magst oder die dein Studio nicht hat.`)
     + section('Darauf basiert dein Plan', list(
       feat(ICON.repeat, 'blue', 'Jeder Muskel 2× pro Woche', 'Trainingsfrequenz von 2× pro Woche gilt in der Forschung (u. a. Brad Schoenfeld) als effektiv – ideal für Ganzkörper.')
-      + feat(ICON.trend, 'green', 'Genug harte Sätze', 'Ca. 6–10 Sätze pro Muskel und Woche. Schon ab ~4 Sätzen wächst der Muskel, mehr bringt mehr – solange du dich erholst.')
-      + feat(ICON.flame, 'orange', 'Nah ans Muskelversagen', 'Wie bei Jeff Nippard: Jeder Satz endet 1–2 Wdh. vor dem Versagen. Lieber wenige, aber wirklich harte Sätze.')
+      + feat(ICON.trend, 'green', 'Genug Sätze für Muskeln', 'Ca. 6–10 Sätze pro Muskel und Woche. Schon ab ~4 Sätzen wächst der Muskel.')
+      + feat(ICON.flame, 'orange', 'Anstrengend, aber nicht bis zum Versagen', 'Jeder Satz endet mit 2–3 Wdh. Reserve. Das reicht für Muskelaufbau, schont Gelenke und lässt Energie für den Fitness-Teil.')
       + feat(ICON.sparkle, 'purple', 'Dehnung unter Last', 'Übungen, die den Muskel in gedehnter Position belasten, bauen nachweislich mehr auf: Beinbeuger sitzend statt liegend, Trizeps über Kopf, Schrägbank-Curls, RDL.')
       + feat(ICON.clock, 'blue', 'Lange Pausen bei Grundübungen', `Grundübungen ${state.settings.rest + 60} Sek., Isolationsübungen ${state.settings.rest} Sek. – mehr Pause heißt mehr Leistung im nächsten Satz.`)
-      + feat(ICON.heart, 'red', 'Fit werden', 'Ein kurzer Cardio-Finisher am Ende verbessert Ausdauer und Herz-Kreislauf, ohne den Muskelaufbau zu stören.')),
-      'Inspiriert von evidenzbasierten Coaches wie Jeff Nippard, Brad Schoenfeld und Mike Israetel – angepasst an 2× 60 Min. pro Woche.')
+      + feat(ICON.heart, 'red', 'Fitness in jedem Training', 'Ca. 12 Min. im Wechsel: Zirkel (Kraftausdauer), Intervalle und Ausdauer. Verbessert Kondition, Herz-Kreislauf und Alltagsfitness.')
+      + feat(ICON.info, 'blue', 'Stabiler Rumpf & beweglich', 'Rumpfübungen wie Pallof Press, Holzhacker und Farmer\'s Walk plus Mobilität beim Aufwärmen – für eine gute Haltung und einen gesunden Rücken.')),
+      'Muskelaufbau inspiriert von evidenzbasierten Coaches wie Jeff Nippard, Brad Schoenfeld und Mike Israetel, ergänzt um Ausdauer und Kraftausdauer – angepasst an 2× 60 Min. pro Woche.')
     + section('So passt sich dein Plan an', list(
       feat(ICON.repeat, 'blue', 'A und B im Wechsel', 'Zwei Ganzkörpertrainings mit unterschiedlichen Übungen – jeder Muskel wird 2× pro Woche trainiert.')
       + feat(ICON.up, 'green', 'Automatisch schwerer', 'Schaffst du in allen Sätzen das obere Ende des Wiederholungsbereichs, steigt das Gewicht. Sonst ist das Ziel +1 Wiederholung.')
@@ -499,7 +512,10 @@ document.addEventListener('click', (ev) => {
       sets.push({ w: lastSet ? lastSet.w : cur.exercises[i].suggestion.weight, r: null, done: false });
       save(); keepScroll(() => {}); break;
     }
-    case 'toggle-cardio': cur.cardio.done = !cur.cardio.done; save(); keepScroll(() => {}); break;
+    case 'toggle-fitness': {
+      const v = parseNum($('#fit-value')?.value);
+      cur.fitness.value = v; cur.fitness.done = !cur.fitness.done; save(); keepScroll(() => {}); break;
+    }
     case 'hide-ex': {
       const idx = +t.dataset.i; const e = cur.exercises[idx];
       const slot = WORKOUTS[cur.workout].slots.find((x) => x.id === e.slot);
@@ -580,6 +596,7 @@ document.addEventListener('change', (ev) => {
 
 document.addEventListener('input', (ev) => {
   const t = ev.target;
+  if (t.id === 'fit-value' && state.current?.fitness) { state.current.fitness.value = parseNum(t.value); save(); return; }
   if (t.dataset.field && state.current) {
     const set = state.current.exercises[+t.dataset.i].sets[+t.dataset.j];
     set[t.dataset.field] = parseNum(t.value);
@@ -611,9 +628,9 @@ function openSwap(i) {
   $('#sheet').classList.add('show');
 }
 function openHowto(exId) {
-  const E = ex(exId); const d = FIG.def(exId);
+  const E = exInfo(exId); const d = FIG.def(exId);
   const yt = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(E.name.replace(/[()]/g, '') + ' Übung Ausführung');
-  const typ = { free: 'Freihantel', machine: 'Geführte Maschine', cable: 'Kabelzug' }[E.type] || '';
+  const typ = { free: 'Freihantel', machine: 'Geführte Maschine', cable: 'Kabelzug', cardio: 'Cardio-Gerät' }[E.type] || '';
   $('#sheet-body').innerHTML = `
     <div class="grabber"></div>
     <div class="sheet-nav"><span></span><div class="headline">Anleitung</div><button class="btn-link strong" data-action="close-sheet">Fertig</button></div>

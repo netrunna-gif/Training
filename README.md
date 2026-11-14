@@ -4,10 +4,12 @@ Web-App (PWA) für 2× Ganzkörpertraining pro Woche (~60 Min.), abgestimmt auf 
 Läuft im Safari, lässt sich auf den Home-Bildschirm legen und funktioniert offline.
 
 ## Trainingsprinzipien
-Inspiriert von evidenzbasierten Coaches (Jeff Nippard, Brad Schoenfeld, Mike Israetel):
-jeder Muskel 2× pro Woche, ca. 6–10 harte Sätze pro Muskel und Woche, Sätze nahe am Muskelversagen,
-Übungen mit Dehnung unter Last (Beinbeuger sitzend, Trizeps über Kopf, Schrägbank-Curls, RDL),
-längere Pausen bei Grundübungen und ein optionaler Cardio-Finisher.
+Muskelaufbau **und** Fitness in 2× 60 Min. pro Woche:
+- **Aufwärmen** (5–7 Min.) mit Mobilität
+- **Kraft** (ca. 40 Min.): jeder Muskel 2× pro Woche, ca. 6–10 Sätze pro Muskel und Woche, 2–3 Wdh. Reserve
+  (nicht bis zum Muskelversagen), Übungen mit Dehnung unter Last, inspiriert von Jeff Nippard, Brad Schoenfeld, Mike Israetel
+- **Fitness** (ca. 12 Min.) im Wechsel: Kraftausdauer-Zirkel, Intervalle (Rad, Rudergerät) und Ausdauer (Crosstrainer, Steigung gehen)
+- **Rumpfstabilität**: Pallof Press, Holzhacker, Farmer's Walk
 
 ## Funktionen
 - **Zwei Pläne A/B** im Wechsel – Ganzkörper, aber unterschiedliche Bewegungsmuster und Übungen
@@ -17,7 +19,8 @@ längere Pausen bei Grundübungen und ein optionaler Cardio-Finisher.
 - **Plateau-Erkennung** und Übungstausch (nur heute oder bis zum nächsten Wechsel, z. B. wenn ein Gerät besetzt ist)
 - **Fortschritt**: Diagramme (geschätztes 1RM), Sätze pro Woche, Körpergewicht, Bestleistungen
 - **Übungen ausblenden**, die du nicht magst oder die dein Studio nicht hat (Plan → Varianten)
-- **Cardio-Finisher** (optional, ~10 Min.) und Aufwärmsätze für die erste Übung
+- **Animierte Figuren und Anleitungen** zu jeder Übung, inkl. YouTube-Suche
+- **Fitness-Block** mit Wert zum Steigern (Runden, Meter, Minuten)
 - **Backup** als JSON exportieren/importieren (Daten liegen lokal auf dem iPhone)
 
 ## Aufs iPhone bringen
