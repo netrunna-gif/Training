@@ -1,5 +1,5 @@
 'use strict';
-const APP_VERSION = '10';
+const APP_VERSION = '11';
 /* Oberfläche im iOS-Stil: Large Titles, gruppierte Listen, Systemfarben, SF-ähnliche Symbole */
 
 /* ================= Symbole ================= */
