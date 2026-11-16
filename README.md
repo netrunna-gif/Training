@@ -11,6 +11,12 @@ Muskelaufbau **und** Fitness in 2× 60 Min. pro Woche:
 - **Fitness** (ca. 12 Min.) ohne Cardio-Geräte im Wechsel: Kraftausdauer-Zirkel, EMOM, Tabata, Kurzhantel-Komplex, Tragen & Rumpf
 - **Rumpfstabilität**: Pallof Press, Holzhacker, Farmer's Walk
 
+## Zuhause-Training
+Wenn du es nicht ins Studio schaffst: **Zuhause A und B**, nur Körpergewicht und Yogamatte, ca. 60 Min.
+(Aufwärmen, Kraft, Fitness-Block). Steigerung über Stufen: Schaffst du in allen Sätzen das obere Ende
+des Wiederholungsbereichs, kommt die schwierigere Variante (z. B. Liegestütze auf Knien → Liegestütze →
+langsame Liegestütze → Diamant-Liegestütze).
+
 ## Funktionen
 - **Zwei Pläne A/B** im Wechsel – Ganzkörper, aber unterschiedliche Bewegungsmuster und Übungen
 - **Satz-Tracking** mit Gewicht/Wiederholungen, Pausen-Timer (mit Ton), Technik-Tipps

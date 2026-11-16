@@ -256,3 +256,109 @@ const WARMUP = [
   '1–2 leichte Sätze bei der ersten Übung (siehe Hinweis)',
 ];
 
+
+// =====================================================================
+// ZUHAUSE-TRAINING – nur Körpergewicht und Yogamatte
+// =====================================================================
+// Steigerung über Stufen (ladder: true): Schaffst du in allen Sätzen das obere Ende
+// des Wiederholungsbereichs, kommt beim nächsten Mal die schwierigere Variante.
+const bw = (name, reps, unit, tip, sets = 3) => ({ name, type: 'bw', sets, reps, inc: 0, start: 0, unit, tip });
+Object.assign(EXERCISES, {
+  // Beine
+  squat_bw:      bw('Kniebeuge', [15, 25], 'Wdh', 'Arme nach vorne für Balance, tief und kontrolliert, Fersen bleiben am Boden.'),
+  squat_pause:   bw('Kniebeuge mit 3 Sek. Pause unten', [12, 20], 'Wdh', 'Unten 3 Sek. halten, dann kraftvoll hoch – viel schwerer als es klingt.'),
+  split_squat:   bw('Split Squat (Standwaage-Kniebeuge)', [10, 15], 'Wdh', 'Wdh. pro Bein. Schrittstellung, senkrecht nach unten, hinteres Knie fast am Boden.'),
+  jump_squat:    bw('Sprung-Kniebeuge', [10, 15], 'Wdh', 'Aus der Kniebeuge explosiv hochspringen, weich landen und direkt wieder runter.'),
+  reverse_lunge: bw('Ausfallschritt rückwärts', [10, 15], 'Wdh', 'Wdh. pro Bein. Großer Schritt nach hinten, Oberkörper aufrecht.'),
+  lateral_lunge: bw('Seitlicher Ausfallschritt', [10, 15], 'Wdh', 'Wdh. pro Seite. Großer Schritt zur Seite, Po nach hinten, anderes Bein gestreckt.'),
+  jump_lunge:    bw('Sprung-Ausfallschritt', [8, 12], 'Wdh', 'Wdh. pro Bein. Im Sprung die Beine wechseln, weich landen.'),
+  glute_bridge:  bw('Glute Bridge (Becken heben)', [15, 25], 'Wdh', 'Rückenlage, Füße nah am Po, Becken hochdrücken und oben Po fest anspannen.'),
+  bridge_sl:     bw('Glute Bridge einbeinig', [10, 15], 'Wdh', 'Wdh. pro Bein. Ein Bein gestreckt in der Luft, Becken bleibt gerade.'),
+  bridge_sl_hold:bw('Glute Bridge einbeinig mit 3 Sek. Halten', [8, 12], 'Wdh', 'Wdh. pro Bein. Oben 3 Sek. halten und Po maximal anspannen.'),
+  sl_rdl:        bw('Einbeiniges Kreuzheben', [10, 15], 'Wdh', 'Wdh. pro Bein. Auf einem Bein, Oberkörper nach vorne, anderes Bein streckt nach hinten. Langsam!'),
+  good_morning:  bw('Good Morning (Körpergewicht)', [15, 20], 'Wdh', 'Hände am Kopf, Hüfte nach hinten schieben, Rücken gerade.'),
+  calf_bw:       bw('Wadenheben einbeinig', [12, 20], 'Wdh', 'Wdh. pro Bein. Langsam ganz hoch auf die Zehen, oben 1 Sek. halten.'),
+  // Drücken
+  pushup_knee:   bw('Liegestütze auf Knien', [8, 20], 'Wdh', 'Knie auf der Matte, Körper von Knie bis Kopf gerade, Brust bis kurz über den Boden.'),
+  pushup:        bw('Liegestütze', [8, 20], 'Wdh', 'Hände etwas breiter als schulterbreit, Körper bretthart, Ellbogen ca. 45° vom Körper.'),
+  pushup_tempo:  bw('Liegestütze langsam (3 Sek. runter)', [6, 15], 'Wdh', '3 Sek. absenken, 1 Sek. Pause, dann hochdrücken.'),
+  pushup_diamond:bw('Diamant-Liegestütze', [6, 15], 'Wdh', 'Hände eng unter der Brust (Daumen und Zeigefinger bilden ein Dreieck) – mehr Trizeps.'),
+  pike_pushup:   bw('Pike Push-up (Schulter-Liegestütz)', [6, 12], 'Wdh', 'Po hoch (umgedrehtes V), Kopf Richtung Boden zwischen die Hände senken.'),
+  shoulder_taps: bw('Schulter-Taps im Liegestütz', [16, 30], 'Wdh', 'Im hohen Liegestütz abwechselnd die gegenüberliegende Schulter antippen, Hüfte ruhig.'),
+  sphinx:        bw('Sphinx-Liegestütz (Trizeps)', [8, 15], 'Wdh', 'Aus dem Unterarmstütz auf die Hände hochdrücken und zurück – Trizeps brennt!'),
+  // Ziehen / Rücken (in Bauchlage)
+  superman_pull: bw('Superman-Latzug (Bauchlage)', [12, 20], 'Wdh', 'Bauchlage, Arme und Brust leicht anheben, Ellbogen zur Hüfte ziehen wie beim Latzug.'),
+  ytw:           bw('Y-T-W-Heben (Bauchlage)', [8, 12], 'Wdh', 'Arme als Y, T und W anheben = 1 Wdh. Daumen nach oben, Schulterblätter zusammen.'),
+  snow_angel:    bw('Reverse Snow Angels (Bauchlage)', [10, 15], 'Wdh', 'Arme knapp über dem Boden von den Hüften in einem Bogen über den Kopf führen.'),
+  // Rumpf
+  plank:         bw('Unterarmstütz (Plank)', [30, 60], 'Sek', 'Unterarme unter den Schultern, Körper gerade, Po und Bauch fest anspannen.'),
+  side_plank:    bw('Seitstütz', [20, 45], 'Sek', 'Sekunden pro Seite. Unterarm unter der Schulter, Hüfte hoch, Körper in einer Linie.'),
+  dead_bug:      bw('Dead Bug', [10, 16], 'Wdh', 'Rückenlage, unterer Rücken bleibt am Boden, gegengleich Arm und Bein strecken.'),
+  hollow_hold:   bw('Hollow Hold', [20, 40], 'Sek', 'Rückenlage, Schultern und Beine leicht anheben, unterer Rücken fest auf der Matte.'),
+  bird_dog:      bw('Bird Dog (Vierfüßlerstand)', [10, 16], 'Wdh', 'Gegengleich Arm und Bein strecken, 2 Sek. halten, Rücken bleibt gerade.'),
+});
+
+Object.assign(WORKOUTS, {
+  HA: {
+    name: 'Zuhause A', home: true,
+    focus: 'Beine · Liegestütze · Rücken · Po · Schultern · Rumpf',
+    slots: [
+      { id: 'HA1', label: 'Beine – Kniebeuge', ladder: true, options: ['squat_bw', 'squat_pause', 'split_squat', 'jump_squat'] },
+      { id: 'HA2', label: 'Brust – Liegestütze', ladder: true, options: ['pushup_knee', 'pushup', 'pushup_tempo', 'pushup_diamond'] },
+      { id: 'HA3', label: 'Rücken (Bauchlage)', options: ['superman_pull', 'ytw', 'snow_angel'] },
+      { id: 'HA4', label: 'Po', ladder: true, options: ['glute_bridge', 'bridge_sl', 'bridge_sl_hold'] },
+      { id: 'HA5', label: 'Schultern', options: ['pike_pushup', 'shoulder_taps'] },
+      { id: 'HA6', label: 'Rumpf', options: ['plank', 'dead_bug', 'hollow_hold'] },
+    ],
+  },
+  HB: {
+    name: 'Zuhause B', home: true,
+    focus: 'Beine einbeinig · Liegestütze · Rücken · Beinbeuger · Waden · Rumpf',
+    slots: [
+      { id: 'HB1', label: 'Beine – Ausfallschritte', ladder: true, options: ['reverse_lunge', 'split_squat', 'jump_lunge'] },
+      { id: 'HB2', label: 'Brust/Trizeps – Liegestütze', ladder: true, options: ['pushup_knee', 'pushup', 'pushup_diamond'] },
+      { id: 'HB3', label: 'Rücken (Bauchlage)', options: ['ytw', 'snow_angel', 'superman_pull'] },
+      { id: 'HB4', label: 'Beinbeuger & Po', ladder: true, options: ['good_morning', 'sl_rdl'] },
+      { id: 'HB5', label: 'Beine seitlich / Waden', options: ['lateral_lunge', 'calf_bw'] },
+      { id: 'HB6', label: 'Rumpf', options: ['side_plank', 'bird_dog', 'sphinx'] },
+    ],
+  },
+});
+
+Object.assign(FIT_EX, {
+  jumping_jack: { name: 'Hampelmann', type: 'bw', tip: 'Locker auf den Fußballen, Arme über den Kopf.' },
+  mountain_climber: { name: 'Mountain Climber', type: 'bw', tip: 'Hoher Liegestütz, Knie abwechselnd schnell zur Brust ziehen, Hüfte tief.' },
+  burpee: { name: 'Burpee', type: 'bw', tip: 'Hocke – Füße nach hinten in den Liegestütz – zurück in die Hocke – hochspringen. Leichter: ohne Sprung und Schritt für Schritt.' },
+  squat_fit: { name: 'Kniebeuge', type: 'bw', tip: 'Zügig, aber sauber.' },
+  pushup_fit: { name: 'Liegestütze (oder auf Knien)', type: 'bw', tip: 'Körper gerade halten, bei Bedarf auf die Knie.' },
+  jump_squat_fit: { name: 'Sprung-Kniebeuge', type: 'bw', tip: 'Explosiv hoch, weich landen.' },
+  plank_fit: { name: 'Unterarmstütz', type: 'bw', tip: 'Körper gerade, Bauch fest.' },
+  lunge_fit: { name: 'Ausfallschritt rückwärts', type: 'bw', tip: 'Abwechselnd links und rechts.' },
+});
+
+// Fitness-Block zuhause (ca. 12–15 Min.) – nur Körpergewicht
+const FITNESS_HOME = [
+  { id: 'h_circuit', kind: 'Zirkel', name: 'Körpergewicht-Zirkel', value: 'Runden',
+    detail: '4 Runden: je 40 Sek. Arbeit, 20 Sek. Pause. Nach jeder Runde 1 Min. Pause.',
+    items: [{ id: 'jump_squat_fit', dose: '40 Sek.' }, { id: 'pushup_fit', dose: '40 Sek.' }, { id: 'mountain_climber', dose: '40 Sek.' }, { id: 'burpee', dose: '40 Sek.' }] },
+  { id: 'h_tabata', kind: 'Intervalle', name: 'Tabata zuhause', value: 'Wdh. gesamt',
+    detail: '3 Blöcke à 4 Min.: 8 × (20 Sek. Vollgas / 10 Sek. Pause), 1 Min. Pause zwischen den Blöcken.',
+    items: [{ id: 'jumping_jack', dose: 'Block 1' }, { id: 'mountain_climber', dose: 'Block 2' }, { id: 'squat_fit', dose: 'Block 3' }] },
+  { id: 'h_emom', kind: 'Intervalle', name: 'EMOM 15 Minuten', value: 'Runden geschafft',
+    detail: 'Jede volle Minute neu starten, die 3 Übungen im Wechsel. Rest der Minute = Pause.',
+    items: [{ id: 'burpee', dose: '8 Wdh.' }, { id: 'squat_fit', dose: '20 Wdh.' }, { id: 'mountain_climber', dose: '30 Wdh.' }] },
+  { id: 'h_ladder', kind: 'Leiter', name: 'Burpee-Kniebeuge-Leiter', value: 'Stufe erreicht',
+    detail: '1 Burpee + 2 Kniebeugen, dann 2 + 4, dann 3 + 6 … so weit du in 12 Min. kommst.',
+    items: [{ id: 'burpee', dose: '1, 2, 3 …' }, { id: 'squat_fit', dose: '2, 4, 6 …' }] },
+  { id: 'h_core', kind: 'Rumpf-Zirkel', name: 'Rumpf & Kondition', value: 'Runden',
+    detail: '3–4 Runden: je 45 Sek. Arbeit, 15 Sek. Pause.',
+    items: [{ id: 'plank_fit', dose: '45 Sek.' }, { id: 'jumping_jack', dose: '45 Sek.' }, { id: 'lunge_fit', dose: '45 Sek.' }, { id: 'mountain_climber', dose: '45 Sek.' }] },
+];
+
+const WARMUP_HOME = [
+  '2 Min. Hampelmann oder auf der Stelle laufen',
+  'Armkreisen vor und zurück, je 10×',
+  'Hüftkreisen und Ausfallschritt mit Rotation, je 5 pro Seite',
+  '10 langsame Kniebeugen und 5 Liegestütze auf Knien',
+  'Katze-Kuh im Vierfüßlerstand, 8×',
+];

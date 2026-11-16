@@ -494,6 +494,151 @@ const FIG = (() => {
       muscles: 'Ganzer Körper, Herz-Kreislauf',
       steps: ['Aufrecht auf die Pedale stellen, Griffe locker halten.', 'Gleichmäßig treten, Arme schieben und ziehen aktiv mit.', 'Tempo so, dass du noch in ganzen Sätzen sprechen kannst.'],
     },
+    // ---------- Körpergewicht (Matte) ----------
+    pushup: {
+      a: { hip: [88, 118], torso: 14, ankle: [36, 148], foot: -80, knee: 'd', hand: [128, 150], elbow: 'b', headTilt: -5 },
+      b: { hip: [88, 137], torso: 2, ankle: [32, 147], foot: -80, knee: 'd', hand: [128, 150], elbow: 'u', headTilt: -5 },
+      muscles: 'Brust, Schultern, Trizeps, Rumpf',
+      steps: ['Hände etwas breiter als schulterbreit, Körper bildet eine gerade Linie.', 'Brust kontrolliert bis kurz über den Boden senken, Ellbogen ca. 45° vom Körper.', 'Kraftvoll hochdrücken, Bauch und Po bleiben fest.'],
+    },
+    pushup_knee: {
+      a: { hip: [92, 128], torso: 30, ankle: [52, 138], foot: 160, knee: 'd', hand: [128, 150], elbow: 'b' },
+      b: { hip: [92, 138], torso: 8, ankle: [52, 140], foot: 160, knee: 'd', hand: [128, 150], elbow: 'u' },
+      muscles: 'Brust, Schultern, Trizeps',
+      steps: ['Knie auf die Matte, Hände etwas breiter als schulterbreit.', 'Körper von Knie bis Kopf gerade halten und die Brust senken.', 'Hochdrücken. Schaffst du 3 × 20, kommt die nächste Stufe.'],
+    },
+    pike: {
+      a: { hip: [96, 92], torso: -48, ankle: [62, 150], foot: 0, hand: [130, 150], elbow: 'b', knee: 'b', headTilt: 0 },
+      b: { hip: [96, 98], torso: -66, ankle: [62, 150], foot: 0, hand: [130, 150], elbow: 'u', knee: 'b' },
+      muscles: 'Schultern, Trizeps',
+      steps: ['Aus dem Liegestütz den Po hochschieben – der Körper bildet ein umgedrehtes V.', 'Ellbogen beugen und den Kopf zwischen die Hände Richtung Boden senken.', 'Wieder hochdrücken.'],
+    },
+    prone_pull: {
+      a: { hip: [86, 142], torso: 6, ankle: [30, 146], foot: -80, knee: 'd', hand: ['s', 42, -6], elbow: 'u', headTilt: 10 },
+      b: { hip: [86, 142], torso: 8, ankle: [30, 146], foot: -80, knee: 'd', hand: ['s', 8, -12], elbow: 'u', headTilt: 10 },
+      muscles: 'Rücken (Lat, Schulterblätter)',
+      steps: ['Auf den Bauch legen, Arme nach vorne gestreckt, Blick zur Matte.', 'Arme und Brust leicht anheben und die Ellbogen zur Hüfte ziehen.', 'Schulterblätter zusammendrücken, dann Arme wieder nach vorne strecken.'],
+    },
+    prone_raise: {
+      a: { hip: [86, 142], torso: 6, ankle: [30, 146], foot: -80, knee: 'd', hand: ['s', 40, 6], elbow: 'u', headTilt: 10 },
+      b: { hip: [86, 142], torso: 10, ankle: [30, 146], foot: -80, knee: 'd', hand: ['s', 38, -18], elbow: 'u', headTilt: 10 },
+      muscles: 'Oberer Rücken, hintere Schulter',
+      steps: ['Auf den Bauch legen, Stirn knapp über der Matte.', 'Arme gestreckt anheben (als Y, dann T, dann W), Daumen zeigen nach oben.', 'Kurz halten, langsam ablegen.'],
+    },
+    snow_angel: {
+      a: { hip: [86, 142], torso: 8, ankle: [30, 146], foot: -80, knee: 'd', hand: ['s', -36, -4], elbow: 'u', headTilt: 10 },
+      b: { hip: [86, 142], torso: 8, ankle: [30, 146], foot: -80, knee: 'd', hand: ['s', 42, -6], elbow: 'u', headTilt: 10 },
+      muscles: 'Oberer Rücken, Schultern',
+      steps: ['Auf den Bauch legen, Arme neben der Hüfte, knapp über der Matte.', 'Arme in einem großen Bogen über den Kopf führen.', 'Langsam zurück zur Hüfte.'],
+    },
+    bridge: {
+      a: { hip: [98, 145], torso: 182, ankle: [128, 150], foot: 0, knee: 'u', hand: [74, 150], elbow: 'd', headTilt: 0 },
+      b: { hip: [104, 120], torso: 208, ankle: [128, 150], foot: 0, knee: 'u', hand: [74, 150], elbow: 'd', headTilt: -28 },
+      muscles: 'Po, Beinbeuger',
+      steps: ['Auf den Rücken legen, Füße hüftbreit nah am Po, Arme neben dem Körper.', 'Becken hochdrücken, bis Knie, Hüfte und Schultern eine Linie bilden.', 'Oben Po fest anspannen, langsam absenken.'],
+    },
+    bridge_sl: {
+      a: { hip: [98, 145], torso: 182, ankle: [128, 150], foot: 0, knee: 'u', ankle2: ['h', 54, -22], knee2: 'u', hand: [74, 150], elbow: 'd' },
+      b: { hip: [104, 120], torso: 208, ankle: [128, 150], foot: 0, knee: 'u', ankle2: ['h', 56, -6], knee2: 'u', hand: [74, 150], elbow: 'd', headTilt: -28 },
+      muscles: 'Po, Beinbeuger',
+      steps: ['Rückenlage, ein Fuß auf der Matte, das andere Bein gestreckt in der Luft.', 'Becken mit dem Standbein hochdrücken, Hüfte bleibt waagerecht.', 'Oben halten, langsam absenken. Wiederholungen pro Bein.'],
+    },
+    plank: {
+      a: { hip: [88, 129], torso: 6, ankle: [32, 147], foot: -80, knee: 'd', hand: [150, 150], elbow: 'd', headTilt: -6 },
+      b: { hip: [88, 126], torso: 7, ankle: [32, 147], foot: -80, knee: 'd', hand: [150, 150], elbow: 'd', headTilt: -6 },
+      muscles: 'Rumpf, Bauch, Schultern',
+      steps: ['Unterarme unter den Schultern, Füße hüftbreit.', 'Körper anheben, bis er eine gerade Linie bildet – Po nicht zu hoch, nicht durchhängen.', 'Bauch und Po fest anspannen und ruhig weiteratmen.'],
+    },
+    side_plank: {
+      a: { hip: [90, 130], torso: 18, ankle: [36, 148], foot: 0, knee: 'd', hand: [148, 150], elbow: 'd', hand2: ['s', 2, -44], elbow2: 'u' },
+      b: { hip: [90, 122], torso: 22, ankle: [36, 148], foot: 0, knee: 'd', hand: [148, 150], elbow: 'd', hand2: ['s', 2, -44], elbow2: 'u' },
+      muscles: 'Seitliche Bauchmuskeln, Rumpf',
+      steps: ['Seitlich auf den Unterarm stützen, Ellbogen unter der Schulter.', 'Hüfte anheben, bis der Körper eine gerade Linie bildet, freier Arm nach oben.', 'Halten, dann Seite wechseln.'],
+    },
+    dead_bug: {
+      a: { hip: [104, 142], torso: 180, ankle: ['h', 30, -30], knee: 'u', ankle2: ['h', 30, -30], knee2: 'u', hand: ['s', 2, -42], hand2: ['s', 2, -42], elbow: 'u' },
+      b: { hip: [104, 142], torso: 180, ankle: ['h', 56, -8], knee: 'u', ankle2: ['h', 30, -30], knee2: 'u', hand: ['s', -42, -4], hand2: ['s', 2, -42], elbow: 'u' },
+      muscles: 'Tiefe Bauchmuskeln, Rumpfstabilität',
+      steps: ['Rückenlage, Arme zur Decke, Beine angewinkelt in der Luft (90°).', 'Gegengleich einen Arm nach hinten und das andere Bein nach vorne strecken.', 'Unterer Rücken bleibt auf der Matte. Zurück und Seite wechseln.'],
+    },
+    hollow: {
+      a: { hip: [104, 142], torso: 170, ankle: [158, 130], foot: 10, knee: 'u', hand: ['s', -40, -10], elbow: 'u' },
+      b: { hip: [104, 143], torso: 166, ankle: [158, 126], foot: 10, knee: 'u', hand: ['s', -40, -12], elbow: 'u' },
+      muscles: 'Bauch, Rumpf',
+      steps: ['Rückenlage, Arme über den Kopf, Beine gestreckt.', 'Schultern und Beine leicht anheben – der Körper wird zur flachen Banane.', 'Unterer Rücken drückt fest in die Matte. Halten.'],
+    },
+    bird_dog: {
+      a: { hip: [80, 112], torso: 0, ankle: [56, 148], foot: 180, knee: 'd', ankle2: [56, 148], foot2: 180, knee2: 'd', hand: [122, 150], hand2: [122, 150], elbow: 'b' },
+      b: { hip: [80, 112], torso: 0, ankle: [56, 148], foot: 180, knee: 'd', ankle2: ['h', -58, -2], foot2: 180, knee2: 'd', hand: [122, 150], hand2: ['s', 44, -4], elbow: 'b' },
+      muscles: 'Rumpf, Rücken, Po',
+      steps: ['Vierfüßlerstand: Hände unter den Schultern, Knie unter der Hüfte.', 'Gegengleich einen Arm nach vorne und ein Bein nach hinten strecken.', '2 Sek. halten, Rücken bleibt gerade. Seite wechseln.'],
+    },
+    climber: {
+      a: { hip: [88, 118], torso: 14, ankle: [36, 148], foot: -80, knee: 'd', ankle2: [92, 140], foot2: -60, knee2: 'u', hand: [128, 150], elbow: 'b' },
+      b: { hip: [88, 123], torso: 8, ankle: [92, 140], foot: -60, knee: 'u', ankle2: [32, 147], foot2: -80, knee2: 'd', hand: [128, 150], elbow: 'b' },
+      muscles: 'Rumpf, Schultern, Herz-Kreislauf',
+      steps: ['Hoher Liegestütz, Hände unter den Schultern.', 'Knie abwechselnd schnell Richtung Brust ziehen.', 'Hüfte bleibt tief und ruhig.'],
+    },
+    jack: {
+      a: { view: 'front', hip: [100, 92], sw: 13, handL: [86, 96], handR: [114, 96], ankleL: [95, 150], ankleR: [105, 150], elbow: 'out' },
+      b: { view: 'front', hip: [100, 88], sw: 13, handL: [80, 6], handR: [120, 6], ankleL: [74, 148], ankleR: [126, 148], elbow: 'out' },
+      muscles: 'Ganzer Körper, Herz-Kreislauf',
+      steps: ['Aufrecht stehen, Arme seitlich.', 'Springen: Beine auseinander, Arme über den Kopf.', 'Zurückspringen und locker im Rhythmus bleiben.'],
+    },
+    burpee: {
+      a: { hip: [96, 116], torso: 66, ankle: [104, 150], foot: 0, hand: [126, 150], elbow: 'd' },
+      b: { hip: [88, 118], torso: 14, ankle: [36, 148], foot: -80, knee: 'd', hand: [128, 150], elbow: 'b' },
+      muscles: 'Ganzer Körper, Herz-Kreislauf',
+      steps: ['In die Hocke gehen und die Hände auf die Matte setzen.', 'Füße nach hinten in den Liegestütz springen (leichter: Schritt für Schritt).', 'Füße zurück zu den Händen, aufrichten und hochspringen.'],
+    },
+    jump_squat: {
+      a: { hip: [84, 121], torso: 58, ankle: [100, 150], foot: 0, hand: ['s', 26, 14], elbow: 'd' },
+      b: { hip: [100, 78], torso: 90, ankle: [100, 136], foot: -60, hand: ['s', -14, 38], elbow: 'd' },
+      muscles: 'Beine, Po, Herz-Kreislauf',
+      steps: ['Tief in die Kniebeuge gehen.', 'Explosiv nach oben springen, Arme schwingen mit.', 'Weich landen und direkt in die nächste Kniebeuge.'],
+    },
+    squat_bw: {
+      a: { ...STAND, hand: ['s', 4, 40], elbow: 'd' },
+      b: { hip: [82, 121], torso: 58, ankle: [100, 150], foot: 0, hand: ['s', 42, 4], elbow: 'd' },
+      muscles: 'Oberschenkel vorne, Po',
+      steps: ['Füße etwa schulterbreit, Zehen leicht nach außen.', 'Hüfte nach hinten-unten, Arme nach vorne für Balance, Rücken gerade.', 'Mindestens bis die Oberschenkel waagerecht sind, dann hochdrücken.'],
+    },
+    lateral_lunge: {
+      a: { view: 'front', hip: [100, 92], sw: 13, handL: [96, 70], handR: [104, 70], ankleL: [80, 150], ankleR: [120, 150], elbow: 'out' },
+      b: { view: 'front', hip: [86, 112], sw: 13, handL: [82, 88], handR: [92, 88], ankleL: [60, 150], ankleR: [128, 150], elbow: 'out' },
+      muscles: 'Beine, Innenseite der Oberschenkel, Po',
+      steps: ['Breiter Stand, Füße zeigen nach vorne.', 'Gewicht auf ein Bein verlagern und tief in dieses Knie gehen, das andere Bein bleibt gestreckt.', 'Zurück zur Mitte, Seite wechseln.'],
+    },
+    sl_rdl: {
+      a: { ...STAND, hand: ['s', 2, 43], elbow: 'b', ankle2: [100, 150] },
+      b: { hip: [92, 94], torso: 8, ankle: [100, 150], foot: 0, hand: ['s', 0, 43], elbow: 'b', ankle2: ['h', -58, -6], foot2: 270 },
+      muscles: 'Beinbeuger, Po, Gleichgewicht',
+      steps: ['Auf einem Bein stehen, Knie leicht gebeugt.', 'Oberkörper nach vorne neigen, das freie Bein streckt gerade nach hinten.', 'Langsam aufrichten. Wiederholungen pro Bein.'],
+    },
+    good_morning: {
+      a: { ...STAND, hand: ['s', -6, -14], elbow: 'u' },
+      b: { hip: [86, 92], torso: 22, ankle: [100, 150], foot: 0, hand: ['s', -6, -14], elbow: 'u' },
+      muscles: 'Beinbeuger, Po, unterer Rücken',
+      steps: ['Hüftbreit stehen, Hände am Hinterkopf.', 'Hüfte nach hinten schieben, Oberkörper neigt sich mit geradem Rücken nach vorne.', 'Po anspannen und aufrichten.'],
+    },
+    calf_bw: {
+      a: { hip: [100, 92], torso: 90, ankle: [100, 148], foot: 0, hand: ['s', 2, 42], elbow: 'd', ankle2: ['h', -14, 44], knee2: 'b', foot2: 180 },
+      b: { hip: [100, 82], torso: 90, ankle: [100, 138], foot: -50, hand: ['s', 2, 42], elbow: 'd', ankle2: ['h', -14, 44], knee2: 'b', foot2: 180 },
+      muscles: 'Waden',
+      steps: ['Auf einem Bein stehen, das andere angewinkelt.', 'Langsam so hoch wie möglich auf die Zehen drücken, oben 1 Sek. halten.', 'Langsam absenken. Wiederholungen pro Bein.'],
+    },
+    sphinx: {
+      a: { hip: [88, 129], torso: 6, ankle: [32, 147], foot: -80, knee: 'd', hand: [150, 150], elbow: 'd' },
+      b: { hip: [88, 118], torso: 14, ankle: [36, 148], foot: -80, knee: 'd', hand: [140, 150], elbow: 'u' },
+      muscles: 'Trizeps, Rumpf',
+      steps: ['Unterarmstütz, Hände etwas vor den Schultern.', 'Nur mit den Händen hochdrücken, bis die Unterarme vom Boden abheben.', 'Kontrolliert zurück auf die Unterarme.'],
+    },
+    taps: {
+      a: { hip: [88, 118], torso: 14, ankle: [36, 148], foot: -80, knee: 'd', hand: [128, 150], hand2: [128, 150], elbow: 'b' },
+      b: { hip: [88, 118], torso: 14, ankle: [36, 148], foot: -80, knee: 'd', hand: [128, 150], hand2: ['s', -4, 8], elbow: 'b', elbow2: 'u' },
+      muscles: 'Rumpf, Schultern',
+      steps: ['Hoher Liegestütz, Füße etwas breiter für mehr Stabilität.', 'Eine Hand tippt die gegenüberliegende Schulter an.', 'Hüfte bleibt ruhig – abwechselnd links und rechts.'],
+    },
   };
 
   // ---------- Übung -> Muster + Geräte ----------
@@ -573,6 +718,17 @@ const FIG = (() => {
     woodchop_fit: ['woodchop'],
     rdl_fit: ['hinge', [db()]],
     db_row_bent: ['row_bent', [db()]],
+    // Körpergewicht
+    squat_bw: ['squat_bw'], squat_pause: ['squat_bw'], jump_squat: ['jump_squat'], split_squat: ['lunge'],
+    reverse_lunge: ['lunge'], lateral_lunge: ['lateral_lunge'], jump_lunge: ['lunge'],
+    glute_bridge: ['bridge'], bridge_sl: ['bridge_sl'], bridge_sl_hold: ['bridge_sl'],
+    sl_rdl: ['sl_rdl'], good_morning: ['good_morning'], calf_bw: ['calf_bw'],
+    pushup_knee: ['pushup_knee'], pushup: ['pushup'], pushup_tempo: ['pushup'], pushup_diamond: ['pushup'],
+    pike_pushup: ['pike'], shoulder_taps: ['taps'], sphinx: ['sphinx'],
+    superman_pull: ['prone_pull'], ytw: ['prone_raise'], snow_angel: ['snow_angel'],
+    plank: ['plank'], side_plank: ['side_plank'], dead_bug: ['dead_bug'], hollow_hold: ['hollow'], bird_dog: ['bird_dog'],
+    jumping_jack: ['jack'], mountain_climber: ['climber'], burpee: ['burpee'], squat_fit: ['squat_bw'],
+    pushup_fit: ['pushup'], jump_squat_fit: ['jump_squat'], plank_fit: ['plank'], lunge_fit: ['lunge'],
   };
 
   const cache = {};

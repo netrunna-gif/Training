@@ -1,5 +1,5 @@
 'use strict';
-const APP_VERSION = '12';
+const APP_VERSION = '13';
 /* Oberfläche im iOS-Stil: Large Titles, gruppierte Listen, Systemfarben, SF-ähnliche Symbole */
 
 /* ================= Symbole ================= */
@@ -21,6 +21,7 @@ const ICON = {
   share: svg('<path d="M12 15V3.5M8 7.5l4-4 4 4M6.5 11H5.5v9.5h13V11h-1"/>'),
   doc: svg('<path d="M6 3.5h8l4 4v13H6z"/><path d="M14 3.5v4h4M12 11v6M9 14l3 3 3-3"/>'),
   trophy: svg('<path d="M8 4.5h8v5a4 4 0 0 1-8 0zM8 6.5H5v1.5a3 3 0 0 0 3 3M16 6.5h3v1.5a3 3 0 0 1-3 3M12 13.5V17M8.5 20h7M9.5 17h5v3h-5z"/>'),
+  home: svg('<path d="M4 11.5 12 4.5l8 7M6.5 9.5V19.5h11V9.5"/><path d="M10 19.5v-5h4v5"/>'),
   heart: svg('<path d="M12 20s-7.5-4.4-7.5-10A4.3 4.3 0 0 1 12 7.4 4.3 4.3 0 0 1 19.5 10c0 5.6-7.5 10-7.5 10z"/>'),
   eyeoff: svg('<path d="M3.5 3.5l17 17M10.6 6.1A9.6 9.6 0 0 1 12 6c5.5 0 9 6 9 6a15 15 0 0 1-2.7 3.4M6.6 6.7C4.2 8.2 3 12 3 12s3.5 6 9 6a8.6 8.6 0 0 0 4-.9M9.9 9.9a3 3 0 0 0 4.2 4.2"/>'),
   play: svg('<circle cx="12" cy="12" r="9"/><path d="M10 8.5v7l5.5-3.5z" fill="currentColor"/>'),
@@ -127,7 +128,7 @@ function viewHome() {
       <div class="value"><div>${wt}</div><div class="sub">${e.sets} × ${e.reps[0]}–${e.reps[1]}</div></div></div>`;
   }).join('');
   const other = w === 'A' ? 'B' : 'A';
-  const fit = fitnessFor(state.sessions.length);
+  const fit = fitnessFor(state.sessions.filter((x) => !isHome(x.workout)).length);
   const cardioRow = `<div class="cell cell-link" data-action="fitness" data-id="${fit.id}"><span class="cell-icon tint-red">${ICON.heart}</span><div class="grow"><div class="body">Fitness: ${esc(fit.name)}</div>
       <div class="sub">${esc(fit.kind)} · ca. 12 Min. · ${fit.items.map((it) => esc(exInfo(it.id).name)).join(', ')}</div>
       <div class="thumb-row">${fit.items.map((it) => `<span class="thumb">${FIG.svg(it.id)}</span>`).join('')}</div></div>${ICON.chevron}</div>`;
@@ -138,6 +139,12 @@ function viewHome() {
        <button class="btn-plain" data-action="start" data-w="${other}">Stattdessen ${esc(WORKOUTS[other].name)}</button>`,
     (changed ? `${changed} Übung${changed > 1 ? 'en' : ''} gegenüber letzter Woche gewechselt. ` : '')
     + 'Ablauf: 5–7 Min. Aufwärmen · ca. 40 Min. Kraft · ca. 12 Min. Fitness = ca. 60 Min.');
+  const hw = nextHome(); const hp = WORKOUTS[hw];
+  out += section('Kein Studio heute?', list(`<div class="cell"><span class="cell-icon tint-purple">${ICON.home}</span><div class="grow">
+        <div class="headline">${esc(hp.name)}</div><div class="sub">Nur Körpergewicht & Yogamatte · ca. 60 Min.</div>
+        <div class="thumb-row">${hp.slots.map((sl) => `<span class="thumb">${FIG.svg(slotExercise(hw, sl))}</span>`).join('')}</div></div></div>`)
+    + `<button class="btn-filled purple" data-action="start" data-w="${hw}">Zuhause trainieren</button>`,
+    'Steigerung über schwierigere Stufen statt Gewicht – z. B. von Liegestützen auf Knien bis zu Diamant-Liegestützen.');
   return out;
 }
 
@@ -165,7 +172,7 @@ function viewWorkout() {
   let out = section('', list(`<div class="cell"><span class="cell-icon tint-blue">${ICON.clock}</span><div class="grow">
       <div class="body">${done} von ${total} Sätzen</div><div class="progress"><span style="width:${(100 * done / total) || 0}%"></span></div></div>
       <div class="value">${mins} Min.</div></div>`), 'Anstrengend, aber sauber: Am Satzende sollten noch 2–3 Wdh. gehen. Haken setzen = Satz fertig, danach startet die Pause.');
-  out += section('1 · Aufwärmen (5–7 Min.)', list(WARMUP.map((w) => `<div class="cell"><span class="cell-icon tint-orange">${ICON.flame}</span><div class="grow body">${esc(w)}</div></div>`).join('')),
+  out += section('1 · Aufwärmen (5–7 Min.)', list((isHome(c.workout) ? WARMUP_HOME : WARMUP).map((w) => `<div class="cell"><span class="cell-icon tint-orange">${ICON.flame}</span><div class="grow body">${esc(w)}</div></div>`).join('')),
     'Ohne Cardio-Gerät: bringt Gelenke und Muskeln auf Betriebstemperatur und senkt das Verletzungsrisiko.');
 
   out += c.exercises.map((e, i) => {
@@ -174,17 +181,18 @@ function viewWorkout() {
     const complete = e.sets.length && e.sets.every((x) => x.done);
     const last = historyOf(e.exId)[0];
     const hintIcon = { up: ICON.up, down: ICON.down, new: ICON.info, hold: ICON.trend }[s.status];
+    const bwEx = E.type === 'bw';
     const rows = e.sets.map((set, j) => `
-      <div class="set ${set.done ? 'done' : ''}">
+      <div class="set ${set.done ? 'done' : ''} ${bwEx ? 'bw' : ''}">
         <span class="set-no">${j + 1}</span>
-        <input type="text" inputmode="decimal" value="${set.w == null ? '' : fmtKg(set.w)}" placeholder="–" data-field="w" data-i="${i}" data-j="${j}" aria-label="Gewicht Satz ${j + 1}">
+        ${bwEx ? '' : `<input type="text" inputmode="decimal" value="${set.w == null ? '' : fmtKg(set.w)}" placeholder="–" data-field="w" data-i="${i}" data-j="${j}" aria-label="Gewicht Satz ${j + 1}">`}
         <input type="text" inputmode="numeric" value="${set.r ?? ''}" placeholder="${s.reps}" data-field="r" data-i="${i}" data-j="${j}" aria-label="${E.unit} Satz ${j + 1}">
         <button class="check" data-action="toggle-set" data-i="${i}" data-j="${j}" aria-label="Satz abhaken">${ICON.check}</button>
       </div>`).join('');
     return `<section class="section" id="ex-${i}"><h2 class="section-header">${i === 0 ? '2 · Kraft – ' : ''}${i + 1}. ${esc(slot?.label || '')}</h2>
       <div class="list ${complete ? 'complete' : ''}">
         <div class="cell"><div class="grow"><div class="headline">${esc(E.name)}${complete ? ` <span class="done-mark">${ICON.check}</span>` : ''}</div>
-          <div class="sub">Ziel ${E.sets} × ${E.reps[0]}–${E.reps[1]} ${E.unit}.${last ? ' · Zuletzt ' + esc(setsTxt(last.sets)) : ''}</div></div>
+          <div class="sub">${slot?.ladder ? `Stufe ${slotOptions(slot).indexOf(e.exId) + 1} von ${slotOptions(slot).length} · ` : ''}Ziel ${E.sets} × ${E.reps[0]}–${E.reps[1]} ${E.unit}.${last ? ' · Zuletzt ' + esc(setsTxt(last.sets)) : ''}</div></div>
           <button class="circle-btn" data-action="swap" data-i="${i}" aria-label="Übung tauschen">${ICON.swap}</button></div>
         <button class="cell fig-cell" data-action="howto" data-ex="${e.exId}">
           <div class="fig-box">${FIG.svg(e.exId, { anim: true })}</div>
@@ -193,7 +201,7 @@ function viewWorkout() {
         <div class="cell hint ${s.status}">${hintIcon}<span>${esc(s.note)}</span></div>
         ${i === 0 && warmupSets(e.exId, s.weight) ? `<div class="cell hint">${ICON.flame}<span>Aufwärmen: ${warmupSets(e.exId, s.weight).map((x) => `${fmtKg(x.w)} kg × ${x.r}`).join(', danach ')} – nicht abhaken.</span></div>` : ''}
         ${plateau(e.exId) ? `<div class="cell hint down">${ICON.repeat}<span>3 Einheiten ohne Fortschritt – probier eine andere Übung (⇄).</span></div>` : ''}
-        <div class="set-head"><span>Satz</span><span>kg</span><span>${E.unit}.</span><span></span></div>
+        <div class="set-head ${bwEx ? 'bw' : ''}"><span>Satz</span>${bwEx ? '' : '<span>kg</span>'}<span>${E.unit === 'Sek' ? 'Sekunden' : E.unit + '.'}</span><span></span></div>
         ${rows}
         <div class="cell cell-actions">
           <button class="btn-link" data-action="add-set" data-i="${i}">${ICON.plus}Satz</button>
@@ -241,12 +249,21 @@ function viewSummary() {
     <div class="tiles">
       <div class="tile"><span class="tile-label">Dauer</span><span class="tile-value tint-blue">${s.durationMin}<small> Min.</small></span></div>
       <div class="tile"><span class="tile-label">Sätze</span><span class="tile-value tint-green">${setCount(s)}</span></div>
-      <div class="tile"><span class="tile-label">Volumen</span><span class="tile-value tint-orange">${(volume(s) / 1000).toFixed(1).replace('.', ',')}<small> t</small></span></div>
+      ${volTile(s)}
     </div>
+    ${s.levelUps?.length ? section('', list(s.levelUps.map((sid) => { const sl = WORKOUTS[s.workout].slots.find((x) => x.id === sid);
+        return `<div class="cell"><span class="cell-icon tint-green">${ICON.up}</span><div class="grow"><div class="body">Nächste Stufe freigeschaltet!</div>
+        <div class="sub">${esc(sl.label)}: ab jetzt ${esc(ex(slotExercise(s.workout, sl)).name)}</div></div></div>`; }).join(''))) : ''}
     ${s.prs?.length ? section('', list(`<div class="cell"><span class="cell-icon tint-orange">${ICON.trophy}</span><div class="grow"><div class="body">${s.prs.length} neue Bestleistung${s.prs.length > 1 ? 'en' : ''}!</div></div></div>`)) : ''}
     ${section('Heute geschafft', list(rows + cardioCell(s)))}
     ${next ? section(`${esc(WORKOUTS[s.workout].name)} nächste Woche`, list(next), 'Gewichte und Ziel-Wiederholungen passt die App automatisch an. Einige Übungen wechseln jede Woche für neue Reize.') : ''}
     <button class="btn-filled" data-action="nav" data-to="home">Fertig</button>`;
+}
+
+function volTile(s) {
+  if (volume(s) > 0) return `<div class="tile"><span class="tile-label">Volumen</span><span class="tile-value tint-orange">${(volume(s) / 1000).toFixed(1).replace('.', ',')}<small> t</small></span></div>`;
+  const reps = s.exercises.reduce((n, e) => n + (ex(e.exId)?.unit === 'Wdh' ? e.sets.reduce((m, x) => m + x.r, 0) : 0), 0);
+  return `<div class="tile"><span class="tile-label">Wiederholungen</span><span class="tile-value tint-orange">${reps}</span></div>`;
 }
 
 function cardioCell(s) {
@@ -268,7 +285,7 @@ function viewHistory() {
   });
   return Object.entries(groups).map(([month, ss]) => section(esc(month), list(ss.map((s) => `
     <button class="cell cell-link" data-action="nav" data-to="session" data-id="${s.id}">
-      <span class="cell-icon tint-${s.workout === 'A' ? 'blue' : 'green'} letter">${s.workout}</span>
+      <span class="cell-icon tint-${isHome(s.workout) ? 'purple' : s.workout === 'A' ? 'blue' : 'green'} letter">${isHome(s.workout) ? ICON.home : s.workout}</span>
       <div class="grow"><div class="body">${esc(WORKOUTS[s.workout].name)} ${s.prs?.length ? `<span class="badge orange">${ICON.trophy}${s.prs.length}</span>` : ''}</div>
       <div class="sub">${fmtDate(s.date, { weekday: 'long', day: 'numeric', month: 'long' })}</div></div>
       <div class="value">${setCount(s)} Sätze<div class="sub">${s.durationMin} Min.</div></div>${ICON.chevron}</button>`).join('')))).join('');
@@ -281,7 +298,7 @@ function viewSession() {
     <div class="tiles">
       <div class="tile"><span class="tile-label">Dauer</span><span class="tile-value tint-blue">${s.durationMin}<small> Min.</small></span></div>
       <div class="tile"><span class="tile-label">Sätze</span><span class="tile-value tint-green">${setCount(s)}</span></div>
-      <div class="tile"><span class="tile-label">Volumen</span><span class="tile-value tint-orange">${(volume(s) / 1000).toFixed(1).replace('.', ',')}<small> t</small></span></div>
+      ${volTile(s)}
     </div>` +
     s.exercises.map((e) => section(esc(ex(e.exId)?.name || e.exId) + (s.prs?.includes(e.exId) ? ' 🏆' : ''),
       list(e.sets.map((x, j) => `<div class="cell"><div class="grow"><div class="body">Satz ${j + 1}</div></div>
@@ -317,8 +334,11 @@ function viewProgress() {
       <div class="cell chart-cell"><canvas class="chart" id="chart-ex"></canvas></div>`), esc(metric))
     + `<div class="tiles">
         <div class="tile"><span class="tile-label">Einheiten</span><span class="tile-value tint-blue">${hist.length}</span></div>
-        <div class="tile"><span class="tile-label">Gewicht</span><span class="tile-value tint-green">${fmtKg(topWeight(last.sets))}<small> kg</small></span>
-          <span class="tile-foot">Start ${fmtKg(topWeight(first.sets))} kg</span></div>
+        ${E.type === 'bw'
+          ? `<div class="tile"><span class="tile-label">Bestwert</span><span class="tile-value tint-green">${Math.max(...last.sets.map((x) => x.r))}<small> ${E.unit}.</small></span>
+          <span class="tile-foot">Start ${Math.max(...first.sets.map((x) => x.r))} ${E.unit}.</span></div>`
+          : `<div class="tile"><span class="tile-label">Gewicht</span><span class="tile-value tint-green">${fmtKg(topWeight(last.sets))}<small> kg</small></span>
+          <span class="tile-foot">Start ${fmtKg(topWeight(first.sets))} kg</span></div>`}
         <div class="tile"><span class="tile-label">Bestes 1RM</span><span class="tile-value tint-orange">${E.inc <= 0 ? '–' : fmtKg(Math.round(best))}${E.inc > 0 ? '<small> kg</small>' : ''}</span></div>
       </div>`
     + (plateau(sel) ? section('', list(`<div class="cell hint down">${ICON.repeat}<span>Plateau erkannt – im Tab „Plan“ kannst du eine Alternative wählen.</span></div>`)) : '')
@@ -332,24 +352,28 @@ function viewProgress() {
 function viewPlan() {
   const w = route.params.w || nextWorkout();
   const plan = WORKOUTS[w];
-  const seg = `<div class="segmented" role="tablist">${['A', 'B'].map((k) =>
-    `<button role="tab" class="${k === w ? 'active' : ''}" data-action="seg" data-w="${k}">${esc(WORKOUTS[k].name)}</button>`).join('')}</div>`;
+  const segName = { A: 'Studio A', B: 'Studio B', HA: 'Zuhause A', HB: 'Zuhause B' };
+  const seg = `<div class="segmented four" role="tablist">${['A', 'B', 'HA', 'HB'].map((k) =>
+    `<button role="tab" class="${k === w ? 'active' : ''}" data-action="seg" data-w="${k}">${segName[k]}</button>`).join('')}</div>`;
   const count = workoutCount(w);
   const rows = plan.slots.map((slot) => {
     const cur = slotExercise(w, slot); const E = ex(cur);
-    const nextId = slotRotation(w, slot, count + weeksUntilChange(slot, count));
+    const nextId = slot.ladder ? slotOptions(slot)[Math.min(slotLevel(slot) + 1, slotOptions(slot).length - 1)] : slotRotation(w, slot, count + weeksUntilChange(slot, count));
     const wu = weeksUntilChange(slot, count);
-    const ov = state.overrides[slot.id] && state.overrides[slot.id].period === slotPeriod(slot, count);
+    const ov = state.overrides[slot.id] && state.overrides[slot.id].period === (slot.ladder ? 'ladder' : slotPeriod(slot, count));
+    const lv = slot.ladder ? slotLevel(slot) : 0; const lvMax = slotOptions(slot).length - 1;
     const opts = slotOptions(slot).map((id) => `<option value="${id}" ${id === cur ? 'selected' : ''}>${esc(ex(id).name)}</option>`).join('');
     const nOn = slot.options.filter((id) => !state.excluded[id]).length;
     const variants = slot.options.map((id) => `<label class="variant"><span>${esc(ex(id).name)}</span>
         <input type="checkbox" class="switch" data-action="exclude" data-ex="${id}" ${state.excluded[id] ? '' : 'checked'}></label>`).join('');
     return `<div class="cell slot-cell"><button class="thumb" data-action="howto" data-ex="${cur}" aria-label="Anleitung">${FIG.svg(cur)}</button><div class="grow">
-        <div class="sub">${esc(slot.label)} · ${slot.main ? 'Grundübung' : 'wechselt wöchentlich'}${ov ? ' · manuell gewählt' : ''}</div>
+        <div class="sub">${esc(slot.label)} · ${slot.ladder ? 'steigert sich in Stufen' : slot.main ? 'Grundübung' : 'wechselt wöchentlich'}${ov ? ' · manuell gewählt' : ''}</div>
         <label class="slot-select"><select data-action="override" data-slot="${slot.id}">${opts}</select>${ICON.chevron}</label>
-        <div class="sub">${E.sets} × ${E.reps[0]}–${E.reps[1]} ${E.unit}. · Steigerung
-          <input class="inc" type="text" inputmode="decimal" value="${fmtKg(Math.abs(incOf(cur)))}" data-action="inc" data-ex="${cur}" aria-label="Steigerung in kg"> kg</div>
-        <div class="sub next-up">${ICON.repeat} ${wu === 1 ? 'Nächste Woche' : `In ${wu} Wochen`}: ${esc(ex(nextId).name)}</div>
+        <div class="sub">${E.sets} × ${E.reps[0]}–${E.reps[1]} ${E.unit}.${E.type === 'bw' ? '' : ` · Steigerung
+          <input class="inc" type="text" inputmode="decimal" value="${fmtKg(Math.abs(incOf(cur)))}" data-action="inc" data-ex="${cur}" aria-label="Steigerung in kg"> kg`}</div>
+        <div class="sub next-up">${slot.ladder
+          ? (lv < lvMax ? `${ICON.up} Stufe ${lv + 1} von ${lvMax + 1} · nächste Stufe: ${esc(ex(nextId).name)}` : `${ICON.trophy} Höchste Stufe erreicht`)
+          : `${ICON.repeat} ${wu === 1 ? 'Nächste Woche' : `In ${wu} Wochen`}: ${esc(ex(nextId).name)}`}</div>
         <details class="variants" ${route.params.open === slot.id ? 'open' : ''} data-slot="${slot.id}"><summary>Varianten (${nOn} von ${slot.options.length} aktiv)</summary>${variants}</details>
       </div></div>`;
   }).join('');
@@ -559,7 +583,10 @@ document.addEventListener('click', (ev) => {
     case 'pick-swap': {
       const idx = +t.dataset.i; const e = cur.exercises[idx];
       const slot = WORKOUTS[cur.workout].slots.find((s) => s.id === e.slot);
-      if (t.dataset.keep === '1') state.overrides[slot.id] = { exId: t.dataset.ex, period: slotPeriod(slot, workoutCount(cur.workout)) };
+      if (t.dataset.keep === '1') {
+        if (slot.ladder) state.levels[slot.id] = slotOptions(slot).indexOf(t.dataset.ex);
+        else state.overrides[slot.id] = { exId: t.dataset.ex, period: slotPeriod(slot, workoutCount(cur.workout)) };
+      }
       cur.exercises[idx] = buildExercise(slot, t.dataset.ex);
       closeSheet(); save(); render();
       const el = $('#ex-' + idx); if (el) window.scrollTo(0, el.offsetTop - 60);
@@ -584,8 +611,13 @@ document.addEventListener('change', (ev) => {
   }
   if (a === 'override') {
     const slot = Object.values(WORKOUTS).flatMap((w) => w.slots).find((s) => s.id === t.dataset.slot);
-    const w = slot.id[0];
+    const w = Object.keys(WORKOUTS).find((k) => WORKOUTS[k].slots.includes(slot));
     delete state.overrides[slot.id];
+    if (slot.ladder) {
+      // bei Stufen-Übungen: Auswahl = neue Stufe
+      state.levels[slot.id] = slotOptions(slot).indexOf(t.value);
+      save(); render(); toast('Stufe geändert'); return;
+    }
     if (slotExercise(w, slot) !== t.value) state.overrides[slot.id] = { exId: t.value, period: slotPeriod(slot, workoutCount(w)) };
     save(); render(); toast('Übung bis zum nächsten Wechsel geändert');
   }

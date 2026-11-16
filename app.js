@@ -10,6 +10,7 @@ const defaultState = () => ({
   overrides: {},           // slotId -> { exId, period } (manueller Tausch, gilt bis zum nächsten Wechsel)
   exSettings: {},          // exId -> { inc }
   excluded: {},            // exId -> true (mag ich nicht / gibt es in meinem Studio nicht)
+  levels: {},              // slotId -> Stufe (Zuhause-Training mit Körpergewicht)
   bodyweight: [],          // { date, kg }
   settings: { rest: 90, mainEvery: 4 },
   notice: null,
@@ -35,6 +36,7 @@ function migrate(data) {
   if (st.current && st.current.exercises.some((e) => !EXERCISES[e.exId] || EXERCISES[e.exId].legacy)) st.current = null;
   if (st.current && !WORKOUTS[st.current.workout].slots.every((sl) => st.current.exercises.some((e) => e.slot === sl.id))) st.current = null;
   st.excluded = st.excluded || {};
+  st.levels = st.levels || {};
   // laufendes Training aus älterer Version: Fitness-Block ergänzen
   if (st.current && (!st.current.fitness || FITNESS.find((f) => f.id === st.current.fitness.id)?.legacy)) { st.current.fitness = { id: FITNESS[0].id, done: false, value: null }; delete st.current.cardio; }
   // alte Cardio-Einträge in Fitness-Blöcke umwandeln
@@ -86,7 +88,16 @@ function slotRotation(w, slot, count = workoutCount(w)) {
   const opts = slotOptions(slot);
   return opts[slotPeriod(slot, count) % opts.length];
 }
+function slotLevel(slot) {
+  const opts = slotOptions(slot);
+  return Math.max(0, Math.min(opts.length - 1, state.levels[slot.id] || 0));
+}
 function slotExercise(w, slot, count = workoutCount(w)) {
+  if (slot.ladder) {
+    const o = state.overrides[slot.id];
+    if (o && o.period === 'ladder' && EXERCISES[o.exId] && !state.excluded[o.exId]) return o.exId;
+    return slotOptions(slot)[slotLevel(slot)];
+  }
   const o = state.overrides[slot.id];
   if (o && o.period === slotPeriod(slot, count) && EXERCISES[o.exId] && !state.excluded[o.exId]) return o.exId;
   return slotRotation(w, slot, count);
@@ -98,9 +109,16 @@ function weeksUntilChange(slot, count) {
   return n;
 }
 
+const isHome = (w) => !!WORKOUTS[w]?.home;
 function nextWorkout() {
-  const last = state.sessions[state.sessions.length - 1];
+  const gym = state.sessions.filter((s) => !isHome(s.workout));
+  const last = gym[gym.length - 1];
   return last ? (last.workout === 'A' ? 'B' : 'A') : 'A';
+}
+function nextHome() {
+  const home = state.sessions.filter((s) => isHome(s.workout));
+  const last = home[home.length - 1];
+  return last ? (last.workout === 'HA' ? 'HB' : 'HA') : 'HA';
 }
 
 // alle Einträge einer Übung, neueste zuerst
@@ -143,6 +161,10 @@ function suggestion(exId) {
   const [lo, hi] = e.reps;
   const inc = incOf(exId);
   const hist = historyOf(exId);
+  if (!hist.length && e.type === 'bw') {
+    return { weight: 0, reps: lo, status: 'new',
+      note: `Neu: Mach ${lo}–${hi} saubere ${e.unit === 'Sek' ? 'Sekunden' : 'Wiederholungen'} pro Satz. Schaffst du überall ${hi}, kommt die nächste Stufe.` };
+  }
   if (!hist.length) {
     return { weight: e.start, reps: lo, status: 'new',
       note: 'Erstes Mal: Gewicht so wählen, dass du ' + lo + '–' + hi + ' saubere ' + e.unit + '. schaffst und noch 2–3 im Tank hast.' };
@@ -155,6 +177,7 @@ function suggestion(exId) {
 
   if (allTop) {
     if (inc === 0) {
+      if (e.type === 'bw') return { weight: 0, reps: hi, status: 'up', note: `Stark – letztes Mal überall ${hi} geschafft! Ausführung langsamer machen (3 Sek. runter) oder unten kurz halten.` };
       if (e.unit === 'Sek') return { weight: w, reps: hi + 10, status: 'up', note: 'Ziel erreicht! Länger halten oder Zusatzgewicht nehmen.' };
       return { weight: w, reps: hi, status: 'up', note: 'Oberes Ende erreicht – Zusatzgewicht nehmen oder langsamer ausführen.' };
     }
@@ -174,7 +197,9 @@ function suggestion(exId) {
     }
   }
 
-  const target = Math.min(hi, Math.max(lo, minReps + 1));
+  const step = e.unit === 'Sek' ? 5 : 1;
+  const target = Math.min(hi, Math.max(lo, minReps + step));
+  if (e.type === 'bw') return { weight: 0, reps: target, status: 'hold', note: `Ziel: ${target} ${e.unit}. pro Satz. Schaffst du überall ${hi}, kommt die nächste Stufe.` };
   return { weight: w, reps: target, status: 'hold', note: `Gleiches Gewicht – Ziel: ${target} ${e.unit}. pro Satz (bis ${hi}, dann wird erhöht).` };
 }
 
@@ -194,14 +219,14 @@ function startWorkout(w) {
   state.current = {
     id: uid(), workout: w, startedAt: new Date().toISOString(),
     exercises: plan.slots.map((slot) => buildExercise(slot, slotExercise(w, slot))),
-    fitness: { id: fitnessFor(state.sessions.length).id, done: false, value: null },
+    fitness: { id: fitnessFor(state.sessions.filter((s) => isHome(s.workout) === isHome(w)).length, isHome(w)).id, done: false, value: null },
   };
   save(); go('workout');
 }
 
 const FITNESS_ACTIVE = FITNESS.filter((f) => !f.legacy);
-function fitnessFor(n) { return FITNESS_ACTIVE[n % FITNESS_ACTIVE.length]; }
-const fitnessById = (id) => FITNESS.find((c) => c.id === id);
+function fitnessFor(n, home = false) { const L = home ? FITNESS_HOME : FITNESS_ACTIVE; return L[n % L.length]; }
+const fitnessById = (id) => FITNESS.find((c) => c.id === id) || FITNESS_HOME.find((c) => c.id === id);
 // letzter eingetragener Wert eines Fitness-Blocks (zum Steigern)
 function lastFitnessValue(id) {
   for (let i = state.sessions.length - 1; i >= 0; i--) {
@@ -215,7 +240,7 @@ const exInfo = (id) => EXERCISES[id] || FIT_EX[id];
 // Pause: Grundübungen länger (bessere Leistung im nächsten Satz), Isolation kürzer
 function restFor(slotId) {
   const slot = Object.values(WORKOUTS).flatMap((w) => w.slots).find((s) => s.id === slotId);
-  return slot?.main ? state.settings.rest + 60 : state.settings.rest;
+  return slot?.main ? state.settings.rest + 60 : (slot?.id?.startsWith('H') ? Math.min(state.settings.rest, 75) : state.settings.rest);
 }
 
 // Aufwärmsätze für die erste Grundübung
@@ -256,6 +281,22 @@ function finishWorkout() {
   };
   state.sessions.push(session);
   state.current = null;
+
+  // Zuhause: Stufen anpassen (alle Sätze am oberen Ende -> nächste Stufe; 2× unter dem Bereich -> zurück)
+  const levelUps = [];
+  WORKOUTS[session.workout].slots.filter((sl) => sl.ladder).forEach((sl) => {
+    const e = session.exercises.find((x) => x.slot === sl.id); if (!e) return;
+    const E = ex(e.exId); const [lo, hi] = E.reps;
+    const opts = slotOptions(sl); const lvl = slotLevel(sl);
+    if (opts[lvl] !== e.exId) return; // manuell getauscht -> Stufe nicht ändern
+    if (e.sets.length >= E.sets && e.sets.every((x) => x.r >= hi) && lvl < opts.length - 1) {
+      state.levels[sl.id] = lvl + 1; levelUps.push(sl.id);
+    } else if (Math.max(...e.sets.map((x) => x.r)) < lo && lvl > 0) {
+      const prev = historyOf(e.exId)[1];
+      if (prev && Math.max(...prev.sets.map((x) => x.r)) < lo) state.levels[sl.id] = lvl - 1;
+    }
+  });
+  session.levelUps = levelUps;
 
   save(); stopRest();
   go('summary', { id: session.id });

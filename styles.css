@@ -363,3 +363,10 @@ input.inc {
 .fit-fig { width: 110px; height: 96px; flex: none; background: var(--fill); border-radius: 10px; padding: 4px; }
 .fit-fig .fig { width: 100%; height: 100%; }
 .sheet-back { justify-self: start; font-size: 17px; }
+.set.bw, .set-head.bw { grid-template-columns: 36px 1fr 40px; }
+.btn-filled.purple { background: var(--purple); }
+.segmented.four { grid-template-columns: repeat(4, 1fr); }
+.segmented.four button { padding: 6px 2px; font-size: 12px; }
+.thumb-row { flex-wrap: wrap; }
+.slot-select { min-width: 0; }
+.slot-select select { min-width: 0; width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
