@@ -1,5 +1,5 @@
 'use strict';
-const APP_VERSION = '14';
+const APP_VERSION = '15';
 /* Oberfläche im iOS-Stil: Large Titles, gruppierte Listen, Systemfarben, SF-ähnliche Symbole */
 
 /* ================= Symbole ================= */
@@ -25,6 +25,9 @@ const ICON = {
   heart: svg('<path d="M12 20s-7.5-4.4-7.5-10A4.3 4.3 0 0 1 12 7.4 4.3 4.3 0 0 1 19.5 10c0 5.6-7.5 10-7.5 10z"/>'),
   eyeoff: svg('<path d="M3.5 3.5l17 17M10.6 6.1A9.6 9.6 0 0 1 12 6c5.5 0 9 6 9 6a15 15 0 0 1-2.7 3.4M6.6 6.7C4.2 8.2 3 12 3 12s3.5 6 9 6a8.6 8.6 0 0 0 4-.9M9.9 9.9a3 3 0 0 0 4.2 4.2"/>'),
   play: svg('<circle cx="12" cy="12" r="9"/><path d="M10 8.5v7l5.5-3.5z" fill="currentColor"/>'),
+  pause: svg('<path d="M9 6v12M15 6v12" stroke-width="3"/>'),
+  back: svg('<path d="M18 6 10 12l8 6zM6 6v12" fill="currentColor"/>'),
+  skip: svg('<path d="M6 6l8 6-8 6zM18 6v12" fill="currentColor"/>'),
   clock: svg('<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>'),
 };
 
@@ -172,6 +175,11 @@ function viewWorkout() {
   let out = section('', list(`<div class="cell"><span class="cell-icon tint-blue">${ICON.clock}</span><div class="grow">
       <div class="body">${done} von ${total} Sätzen</div><div class="progress"><span style="width:${(100 * done / total) || 0}%"></span></div></div>
       <div class="value">${mins} Min.</div></div>`), 'Anstrengend, aber sauber: Am Satzende sollten noch 2–3 Wdh. gehen. Haken setzen = Satz fertig, danach startet die Pause.');
+  if (isHome(c.workout)) {
+    const resume = c.player?.idx > 0;
+    out += section('', `<button class="btn-filled purple pl-start" data-action="player">${ICON.play}&nbsp;${resume ? 'Geführtes Training fortsetzen' : 'Geführtes Training mit Timer'}</button>`,
+      'Die App führt dich mit Timer durch alle Übungen, Sätze und Pausen. Zwischen den Übungen wartet sie, bis du startest. Du kannst auch ohne Timer unten in der Liste abhaken.');
+  }
   out += isHome(c.workout)
     ? section('1 · Mobilitäts-Warm-up (ca. 8 Min.)', list(WARMUP_HOME.map((it) => `<button class="cell cell-link" data-action="howto" data-ex="${it.id}"><span class="thumb">${FIG.svg(it.id, { anim: true })}</span>
         <div class="grow"><div class="body">${esc(exInfo(it.id).name)}</div><div class="sub">${esc(it.dose)}</div></div>${ICON.chevron}</button>`).join('')),
@@ -561,6 +569,7 @@ document.addEventListener('click', (ev) => {
       break;
     }
     case 'howto': openHowto(t.dataset.ex, t.dataset.back); break;
+    case 'player': syncInputs(); save(); PLAYER.open(); break;
     case 'fitness': openFitness(t.dataset.id); break;
     case 'swap': openSwap(i); break;
     case 'finish': syncInputs(); if (confirm('Training beenden und speichern?')) finishWorkout(); break;

@@ -357,17 +357,17 @@ Object.assign(FIT_EX, {
 // Zuhause = Kraft & Mobilität: Abschluss mit Mobilitäts-Flow (ca. 15 Min., wechselt jedes Mal)
 const MOBILITY_HOME = [
   { id: 'm_hips', kind: 'Mobilität', name: 'Hüft-Flow', value: 'Minuten', minutes: 15,
-    detail: '2 Durchgänge, ruhig atmen, nichts erzwingen – Dehnung ja, Schmerz nein.',
-    items: [{ id: 'hip_9090', dose: '1 Min.' }, { id: 'hip_flexor', dose: '45 Sek. je Seite' }, { id: 'pigeon', dose: '45 Sek. je Seite' }, { id: 'deep_squat', dose: '1 Min.' }] },
+    detail: '2 Durchgänge, ruhig atmen, nichts erzwingen – Dehnung ja, Schmerz nein.', rounds: 2,
+    items: [{ id: 'hip_9090', dose: '1 Min.', sec: 60 }, { id: 'hip_flexor', dose: '45 Sek. je Seite', sec: 90, sides: true }, { id: 'pigeon', dose: '45 Sek. je Seite', sec: 90, sides: true }, { id: 'deep_squat', dose: '1 Min.', sec: 60 }] },
   { id: 'm_spine', kind: 'Mobilität', name: 'Rücken & Schultern', value: 'Minuten', minutes: 15,
-    detail: '2 Durchgänge, langsam und kontrolliert.',
-    items: [{ id: 'cat_cow', dose: '1 Min.' }, { id: 't_spine', dose: '6 je Seite' }, { id: 'arm_circles', dose: '10 vor / 10 zurück' }, { id: 'cobra', dose: '5 × 5 Sek.' }, { id: 'childs_pose', dose: '1 Min.' }] },
+    detail: '2 Durchgänge, langsam und kontrolliert.', rounds: 2,
+    items: [{ id: 'cat_cow', dose: '1 Min.', sec: 60 }, { id: 't_spine', dose: '6 je Seite', sec: 80, sides: true }, { id: 'arm_circles', dose: '10 vor / 10 zurück', sec: 45 }, { id: 'cobra', dose: '5 × 5 Sek.', sec: 45 }, { id: 'childs_pose', dose: '1 Min.', sec: 60 }] },
   { id: 'm_yoga', kind: 'Mobilität', name: 'Yoga-Flow', value: 'Runden', minutes: 15,
-    detail: '4–5 Runden fließend hintereinander, jede Position 3 tiefe Atemzüge.',
-    items: [{ id: 'down_dog', dose: '3 Atemzüge' }, { id: 'wgs', dose: '3 Atemzüge je Seite' }, { id: 'cobra', dose: '3 Atemzüge' }, { id: 'childs_pose', dose: '3 Atemzüge' }] },
+    detail: '4–5 Runden fließend hintereinander, jede Position 3 tiefe Atemzüge.', rounds: 5,
+    items: [{ id: 'down_dog', dose: '3 Atemzüge', sec: 30 }, { id: 'wgs', dose: '3 Atemzüge je Seite', sec: 60, sides: true }, { id: 'cobra', dose: '3 Atemzüge', sec: 30 }, { id: 'childs_pose', dose: '3 Atemzüge', sec: 30 }] },
   { id: 'm_legs', kind: 'Mobilität', name: 'Beine & Rückseite', value: 'Minuten', minutes: 15,
-    detail: '2 Durchgänge, Dehnungen sanft halten.',
-    items: [{ id: 'ankle_rock', dose: '10 je Seite' }, { id: 'fwd_fold', dose: '1 Min.' }, { id: 'hip_flexor', dose: '45 Sek. je Seite' }, { id: 'down_dog', dose: '45 Sek.' }] },
+    detail: '2 Durchgänge, Dehnungen sanft halten.', rounds: 2,
+    items: [{ id: 'ankle_rock', dose: '10 je Seite', sec: 70, sides: true }, { id: 'fwd_fold', dose: '1 Min.', sec: 60 }, { id: 'hip_flexor', dose: '45 Sek. je Seite', sec: 90, sides: true }, { id: 'down_dog', dose: '45 Sek.', sec: 45 }, { id: 'childs_pose', dose: '1 Min.', sec: 60 }] },
 ];
 
 // ältere Zuhause-Fitnessblöcke (nur für Verlaufseinträge)
@@ -391,10 +391,10 @@ const FITNESS_HOME = [
 
 // Mobilitäts-Warm-up zuhause (ca. 8 Min.)
 const WARMUP_HOME = [
-  { id: 'jumping_jack', dose: '1 Min. locker' },
-  { id: 'cat_cow', dose: '8 ×' },
-  { id: 'wgs', dose: '5 je Seite' },
-  { id: 'hip_9090', dose: '8 Wechsel' },
-  { id: 'arm_circles', dose: '10 vor / 10 zurück' },
-  { id: 'squat_fit', dose: '10 langsam' },
+  { id: 'jumping_jack', dose: '1 Min. locker', sec: 60 },
+  { id: 'cat_cow', dose: '8 ×', sec: 45 },
+  { id: 'wgs', dose: '5 je Seite', sec: 80, sides: true },
+  { id: 'hip_9090', dose: '8 Wechsel', sec: 50 },
+  { id: 'arm_circles', dose: '10 vor / 10 zurück', sec: 40 },
+  { id: 'squat_fit', dose: '10 langsam', sec: 45 },
 ];

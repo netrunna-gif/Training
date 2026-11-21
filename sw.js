@@ -1,7 +1,7 @@
 // Offline-Unterstützung: App-Dateien zwischenspeichern.
 // Bei Änderungen an der App die Versionsnummer erhöhen.
-const CACHE = 'gymplan-v14';
-const ASSETS = ['./', 'index.html', 'styles.css', 'data.js', 'app.js', 'ui.js', 'figures.js', 'manifest.webmanifest',
+const CACHE = 'gymplan-v15';
+const ASSETS = ['./', 'index.html', 'styles.css', 'data.js', 'app.js', 'ui.js', 'figures.js', 'player.js', 'manifest.webmanifest',
   'icons/icon.svg', 'icons/app-180.png', 'icons/app-192.png', 'icons/app-512.png'];
 
 self.addEventListener('install', (e) => {
