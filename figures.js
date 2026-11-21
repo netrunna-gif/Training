@@ -639,6 +639,85 @@ const FIG = (() => {
       muscles: 'Rumpf, Schultern',
       steps: ['Hoher Liegestütz, Füße etwas breiter für mehr Stabilität.', 'Eine Hand tippt die gegenüberliegende Schulter an.', 'Hüfte bleibt ruhig – abwechselnd links und rechts.'],
     },
+    // ---------- Mobilität ----------
+    cat_cow: {
+      a: { hip: [80, 112], torso: 4, ankle: [56, 148], foot: 180, knee: 'd', hand: [122, 150], elbow: 'b', headTilt: -55 },
+      b: { hip: [80, 114], torso: -2, ankle: [56, 148], foot: 180, knee: 'd', hand: [122, 150], elbow: 'b', headTilt: 40 },
+      muscles: 'Wirbelsäule, Rücken',
+      steps: ['Vierfüßlerstand: Hände unter den Schultern, Knie unter der Hüfte.', 'Ausatmen: Rücken rund machen, Kinn zur Brust (Katze).', 'Einatmen: Brust nach vorne schieben, Blick leicht nach oben (Kuh).'],
+    },
+    wgs: {
+      a: { hip: [98, 128], torso: 48, ankle: [130, 150], foot: 0, knee: 'f', ankle2: [46, 148], foot2: -60, knee2: 'd', hand: [126, 150], hand2: [134, 150], elbow: 'd' },
+      b: { hip: [98, 128], torso: 56, ankle: [130, 150], foot: 0, knee: 'f', ankle2: [46, 148], foot2: -60, knee2: 'd', hand: [126, 150], hand2: ['s', -6, -44], elbow: 'd', elbow2: 'u' },
+      muscles: 'Hüfte, Beinrückseite, Brustwirbelsäule',
+      steps: ['Tiefer Ausfallschritt, hinteres Bein lang.', 'Beide Hände innen neben den vorderen Fuß.', 'Den Arm auf der Seite des vorderen Beins zur Decke aufdrehen, Blick folgt der Hand. Seite wechseln.'],
+    },
+    hip_flexor: {
+      a: { hip: [92, 118], torso: 90, ankle: [124, 150], foot: 0, knee: 'f', ankle2: [58, 148], foot2: 180, knee2: 'd', hand: ['s', 2, 40], elbow: 'd' },
+      b: { hip: [100, 121], torso: 94, ankle: [124, 150], foot: 0, knee: 'f', ankle2: [58, 148], foot2: 180, knee2: 'd', hand: ['s', 2, -44], elbow: 'd' },
+      muscles: 'Hüftbeuger, Oberschenkel vorne',
+      steps: ['Halber Kniestand: hinteres Knie auf der Matte, vorderer Fuß flach.', 'Po anspannen und die Hüfte langsam nach vorne schieben.', 'Arm auf der Seite des hinteren Beins nach oben strecken. Halten, Seite wechseln.'],
+    },
+    t_spine: {
+      a: { hip: [80, 112], torso: 2, ankle: [56, 148], foot: 180, knee: 'd', hand: [122, 150], elbow: 'b', hand2: ['s', 0, -44], elbow2: 'u' },
+      b: { hip: [80, 114], torso: -4, ankle: [56, 148], foot: 180, knee: 'd', hand: [122, 150], elbow: 'b', hand2: ['s', -22, 30], elbow2: 'd' },
+      muscles: 'Brustwirbelsäule, Schultern',
+      steps: ['Vierfüßlerstand.', 'Einen Arm weit zur Decke aufdrehen, Blick folgt der Hand.', 'Den Arm unter dem Körper durchfädeln, Schulter Richtung Matte. Seite wechseln.'],
+    },
+    down_dog: {
+      a: { hip: [96, 92], torso: -48, ankle: [62, 150], foot: 0, hand: [130, 150], elbow: 'b', knee: 'b' },
+      b: { hip: [92, 88], torso: -52, ankle: [62, 150], foot: 10, hand: [130, 150], elbow: 'b', knee: 'b' },
+      muscles: 'Waden, Beinrückseite, Schultern, Rücken',
+      steps: ['Aus dem Vierfüßlerstand die Knie strecken und den Po nach oben schieben.', 'Rücken lang machen, Arme und Oberkörper bilden eine Linie.', 'Fersen abwechselnd Richtung Boden drücken, ruhig atmen.'],
+    },
+    childs_pose: {
+      a: { hip: [80, 134], torso: 2, ankle: [70, 150], foot: 180, knee: 'f', hand: [158, 150], elbow: 'u', headTilt: -10 },
+      b: { hip: [76, 136], torso: 0, ankle: [70, 150], foot: 180, knee: 'f', hand: [160, 150], elbow: 'u', headTilt: -10 },
+      muscles: 'Rücken, Hüfte, Schultern – Entspannung',
+      steps: ['Kniestand, Po Richtung Fersen sinken lassen.', 'Arme lang nach vorne auf die Matte, Stirn ablegen.', 'Ruhig in den Rücken atmen und loslassen.'],
+    },
+    deep_squat: {
+      a: { hip: [86, 134], torso: 72, ankle: [100, 150], foot: 0, hand: ['s', 16, 16], elbow: 'd' },
+      b: { hip: [90, 131], torso: 78, ankle: [100, 150], foot: 0, hand: ['s', 16, 16], elbow: 'd' },
+      muscles: 'Hüfte, Sprunggelenke, unterer Rücken',
+      steps: ['Füße schulterbreit, Zehen leicht nach außen.', 'So tief wie möglich in die Hocke, Fersen bleiben am Boden.', 'Hände vor der Brust, Ellbogen drücken die Knie sanft nach außen. Leicht hin und her wiegen.'],
+    },
+    fwd_fold: {
+      a: { hip: [78, 146], torso: 92, ankle: [138, 147], foot: 80, knee: 'u', hand: ['s', 8, 30], elbow: 'd' },
+      b: { hip: [78, 146], torso: 32, ankle: [138, 147], foot: 80, knee: 'u', hand: [132, 140], elbow: 'd', headTilt: -10 },
+      muscles: 'Beinrückseite, unterer Rücken',
+      steps: ['Aufrecht sitzen, Beine gestreckt.', 'Mit langem Rücken aus der Hüfte nach vorne neigen.', 'Hände Richtung Füße, halten und ruhig atmen – Knie dürfen leicht gebeugt sein.'],
+    },
+    cobra: {
+      a: { hip: [84, 144], torso: 6, ankle: [28, 147], foot: -80, knee: 'd', hand: [122, 150], elbow: 'u' },
+      b: { hip: [84, 144], torso: 34, ankle: [28, 147], foot: -80, knee: 'd', hand: [122, 150], elbow: 'b', headTilt: 10 },
+      muscles: 'Bauch (Dehnung), Wirbelsäule',
+      steps: ['Bauchlage, Hände neben der Brust.', 'Brust langsam anheben, Becken bleibt auf der Matte, Schultern weg von den Ohren.', 'Kurz halten und langsam wieder ablegen.'],
+    },
+    pigeon: {
+      a: { hip: [94, 132], torso: 80, ankle: [122, 148], foot: 0, knee: 'f', ankle2: [36, 148], foot2: -80, knee2: 'd', hand: [126, 150], elbow: 'b' },
+      b: { hip: [94, 136], torso: 30, ankle: [122, 148], foot: 0, knee: 'f', ankle2: [36, 148], foot2: -80, knee2: 'd', hand: [146, 150], elbow: 'u' },
+      muscles: 'Po, Hüfte (Außenrotation)',
+      steps: ['Ein Bein angewinkelt vor dem Körper ablegen, das andere lang nach hinten.', 'Hüfte gerade ausrichten, aufrecht abstützen.', 'Oberkörper langsam nach vorne sinken lassen, halten. Seite wechseln.'],
+    },
+    arm_circles: {
+      a: { view: 'front', hip: [100, 92], sw: 13, handL: [56, 56], handR: [144, 56], ankleL: [90, 150], ankleR: [110, 150], elbow: 'out' },
+      b: { view: 'front', hip: [100, 92], sw: 13, handL: [66, 18], handR: [134, 18], ankleL: [90, 150], ankleR: [110, 150], elbow: 'out' },
+      muscles: 'Schultern',
+      steps: ['Aufrecht stehen, Arme gestreckt zur Seite.', 'Große, langsame Kreise nach vorne.', 'Dann die gleiche Anzahl nach hinten.'],
+    },
+    hip_9090: {
+      a: { hip: [94, 146], torso: 96, ankle: [130, 150], foot: 0, knee: 'u', ankle2: [112, 150], knee2: 'u', hand: [70, 150], elbow: 'd' },
+      b: { hip: [94, 146], torso: 96, ankle: [122, 150], foot: 0, knee: 'f', ankle2: [106, 150], knee2: 'f', hand: [70, 150], elbow: 'd' },
+      muscles: 'Hüfte (Innen- und Außenrotation)',
+      steps: ['Auf die Matte setzen, Hände hinter dem Körper abstützen, Füße breit.', 'Beide Knie langsam zur einen Seite kippen.', 'Über die Mitte zur anderen Seite wechseln – langsam und kontrolliert.'],
+    },
+    ankle_rock: {
+      a: { hip: [92, 118], torso: 90, ankle: [118, 150], foot: 0, knee: 'f', ankle2: [58, 148], foot2: 180, knee2: 'd', hand: ['s', 20, 36], elbow: 'd' },
+      b: { hip: [100, 120], torso: 92, ankle: [118, 150], foot: 0, knee: 'f', ankle2: [58, 148], foot2: 180, knee2: 'd', hand: ['s', 20, 36], elbow: 'd' },
+      muscles: 'Sprunggelenke, Waden',
+      steps: ['Halber Kniestand, vorderer Fuß flach auf der Matte.', 'Vorderes Knie langsam weit über die Zehen schieben – die Ferse bleibt unten.', 'Zurück und wiederholen. Seite wechseln.'],
+    },
   };
 
   // ---------- Übung -> Muster + Geräte ----------
@@ -729,6 +808,10 @@ const FIG = (() => {
     plank: ['plank'], side_plank: ['side_plank'], dead_bug: ['dead_bug'], hollow_hold: ['hollow'], bird_dog: ['bird_dog'],
     jumping_jack: ['jack'], mountain_climber: ['climber'], burpee: ['burpee'], squat_fit: ['squat_bw'],
     pushup_fit: ['pushup'], jump_squat_fit: ['jump_squat'], plank_fit: ['plank'], lunge_fit: ['lunge'],
+    // Mobilität
+    cat_cow: ['cat_cow'], wgs: ['wgs'], hip_flexor: ['hip_flexor'], t_spine: ['t_spine'], down_dog: ['down_dog'],
+    childs_pose: ['childs_pose'], deep_squat: ['deep_squat'], fwd_fold: ['fwd_fold'], cobra: ['cobra'], pigeon: ['pigeon'],
+    arm_circles: ['arm_circles'], hip_9090: ['hip_9090'], ankle_rock: ['ankle_rock'],
   };
 
   const cache = {};

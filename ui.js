@@ -1,5 +1,5 @@
 'use strict';
-const APP_VERSION = '13';
+const APP_VERSION = '14';
 /* Oberfläche im iOS-Stil: Large Titles, gruppierte Listen, Systemfarben, SF-ähnliche Symbole */
 
 /* ================= Symbole ================= */
@@ -141,10 +141,10 @@ function viewHome() {
     + 'Ablauf: 5–7 Min. Aufwärmen · ca. 40 Min. Kraft · ca. 12 Min. Fitness = ca. 60 Min.');
   const hw = nextHome(); const hp = WORKOUTS[hw];
   out += section('Kein Studio heute?', list(`<div class="cell"><span class="cell-icon tint-purple">${ICON.home}</span><div class="grow">
-        <div class="headline">${esc(hp.name)}</div><div class="sub">Nur Körpergewicht & Yogamatte · ca. 60 Min.</div>
+        <div class="headline">${esc(hp.name)} · Kraft & Mobilität</div><div class="sub">Nur Körpergewicht & Yogamatte · ca. 60 Min.</div>
         <div class="thumb-row">${hp.slots.map((sl) => `<span class="thumb">${FIG.svg(slotExercise(hw, sl))}</span>`).join('')}</div></div></div>`)
     + `<button class="btn-filled purple" data-action="start" data-w="${hw}">Zuhause trainieren</button>`,
-    'Steigerung über schwierigere Stufen statt Gewicht – z. B. von Liegestützen auf Knien bis zu Diamant-Liegestützen.');
+    'Ablauf: 8 Min. Mobilitäts-Warm-up · ca. 35 Min. Kraft mit Mobilität in den Satzpausen · ca. 15 Min. Mobilitäts-Flow. Steigerung über schwierigere Stufen statt Gewicht.');
   return out;
 }
 
@@ -172,7 +172,11 @@ function viewWorkout() {
   let out = section('', list(`<div class="cell"><span class="cell-icon tint-blue">${ICON.clock}</span><div class="grow">
       <div class="body">${done} von ${total} Sätzen</div><div class="progress"><span style="width:${(100 * done / total) || 0}%"></span></div></div>
       <div class="value">${mins} Min.</div></div>`), 'Anstrengend, aber sauber: Am Satzende sollten noch 2–3 Wdh. gehen. Haken setzen = Satz fertig, danach startet die Pause.');
-  out += section('1 · Aufwärmen (5–7 Min.)', list((isHome(c.workout) ? WARMUP_HOME : WARMUP).map((w) => `<div class="cell"><span class="cell-icon tint-orange">${ICON.flame}</span><div class="grow body">${esc(w)}</div></div>`).join('')),
+  out += isHome(c.workout)
+    ? section('1 · Mobilitäts-Warm-up (ca. 8 Min.)', list(WARMUP_HOME.map((it) => `<button class="cell cell-link" data-action="howto" data-ex="${it.id}"><span class="thumb">${FIG.svg(it.id, { anim: true })}</span>
+        <div class="grow"><div class="body">${esc(exInfo(it.id).name)}</div><div class="sub">${esc(it.dose)}</div></div>${ICON.chevron}</button>`).join('')),
+      'Macht Gelenke und Wirbelsäule beweglich und bereitet dich auf die Kraftübungen vor. Tippe auf eine Übung für die Anleitung.')
+    : section('1 · Aufwärmen (5–7 Min.)', list(WARMUP.map((w) => `<div class="cell"><span class="cell-icon tint-orange">${ICON.flame}</span><div class="grow body">${esc(w)}</div></div>`).join('')),
     'Ohne Cardio-Gerät: bringt Gelenke und Muskeln auf Betriebstemperatur und senkt das Verletzungsrisiko.');
 
   out += c.exercises.map((e, i) => {
@@ -199,6 +203,8 @@ function viewWorkout() {
           <div class="grow fig-info"><div class="sub">Trainiert</div><div class="body strong">${esc(FIG.def(e.exId)?.muscles || '')}</div>
           <span class="btn-link">${ICON.info}So geht's</span></div></button>
         <div class="cell hint ${s.status}">${hintIcon}<span>${esc(s.note)}</span></div>
+        ${slot?.mobility ? `<button class="cell cell-link mob-cell" data-action="howto" data-ex="${slot.mobility.id}"><span class="thumb">${FIG.svg(slot.mobility.id, { anim: true })}</span>
+          <div class="grow"><div class="sub tint-purple">In jeder Satzpause: Mobilität</div><div class="body">${esc(exInfo(slot.mobility.id).name)}</div><div class="sub">${esc(slot.mobility.dose)}</div></div>${ICON.chevron}</button>` : ''}
         ${i === 0 && warmupSets(e.exId, s.weight) ? `<div class="cell hint">${ICON.flame}<span>Aufwärmen: ${warmupSets(e.exId, s.weight).map((x) => `${fmtKg(x.w)} kg × ${x.r}`).join(', danach ')} – nicht abhaken.</span></div>` : ''}
         ${plateau(e.exId) ? `<div class="cell hint down">${ICON.repeat}<span>3 Einheiten ohne Fortschritt – probier eine andere Übung (⇄).</span></div>` : ''}
         <div class="set-head ${bwEx ? 'bw' : ''}"><span>Satz</span>${bwEx ? '' : '<span>kg</span>'}<span>${E.unit === 'Sek' ? 'Sekunden' : E.unit + '.'}</span><span></span></div>
@@ -211,15 +217,15 @@ function viewWorkout() {
   const fb = fitnessById(c.fitness?.id);
   if (fb) {
     const lastV = lastFitnessValue(fb.id);
-    out += `<section class="section" id="fitness"><h2 class="section-header">3 · Fitness – ${esc(fb.kind)} (ca. 12 Min.)</h2>` + list(
-      `<button class="cell cell-link ${c.fitness.done ? 'cardio-done' : ''}" data-action="fitness" data-id="${fb.id}"><span class="cell-icon tint-red">${ICON.heart}</span>
+    out += `<section class="section" id="fitness"><h2 class="section-header">3 · ${fb.kind === 'Mobilität' ? 'Mobilitäts-Flow' : 'Fitness – ' + esc(fb.kind)} (ca. ${fb.minutes || 12} Min.)</h2>` + list(
+      `<button class="cell cell-link ${c.fitness.done ? 'cardio-done' : ''}" data-action="fitness" data-id="${fb.id}">${fbIcon(fb)}
         <div class="grow"><div class="headline">${esc(fb.name)}</div><div class="sub">${esc(fb.detail)}</div><span class="btn-link">${ICON.play}Alle Übungen ansehen</span></div></button>`
       + fb.items.map((it) => `<button class="cell cell-link" data-action="howto" data-ex="${it.id}"><span class="thumb">${FIG.svg(it.id, { anim: true })}</span>
           <div class="grow"><div class="body">${esc(exInfo(it.id).name)}</div><div class="sub">${esc(it.dose)}</div></div>${ICON.chevron}</button>`).join('')
       + `<div class="cell"><div class="grow"><div class="body">${esc(fb.value)}</div><div class="sub">${lastV != null ? `Letztes Mal: ${fmtKg(lastV)} – versuch etwas mehr!` : 'Trag ein, was du geschafft hast'}</div></div>
           <input type="text" inputmode="decimal" class="fit-input" id="fit-value" value="${c.fitness.value ?? ''}" placeholder="${lastV != null ? fmtKg(lastV) : '–'}" aria-label="${esc(fb.value)}">
           <button class="check ${c.fitness.done ? 'on' : ''}" data-action="toggle-fitness" aria-label="Fitness-Block erledigt">${ICON.check}</button></div>`)
-      + `<p class="section-footer">Hier geht es um Kondition, Kraftausdauer und einen stabilen Rumpf – nicht um Maximalgewicht. Wähle leichte Hanteln, mit denen du sauber in Bewegung bleibst. Tipp: Stell dir einen Timer auf dem iPhone.</p></section>`;
+      + `<p class="section-footer">${fb.kind === 'Mobilität' ? 'Ruhig atmen und in die Dehnung hineinentspannen – nie in den Schmerz. Beweglichkeit verbessert sich mit Regelmäßigkeit.' : 'Hier geht es um Kondition, Kraftausdauer und einen stabilen Rumpf – nicht um Maximalgewicht. Wähle leichte Hanteln, mit denen du sauber in Bewegung bleibst. Tipp: Stell dir einen Timer auf dem iPhone.'}</p></section>`;
   }
   out += `<button class="btn-filled" data-action="finish">Training beenden</button>
     <button class="btn-plain destructive" data-action="discard">Training verwerfen</button>`;
@@ -260,6 +266,8 @@ function viewSummary() {
     <button class="btn-filled" data-action="nav" data-to="home">Fertig</button>`;
 }
 
+const fbIcon = (fb) => fb.kind === 'Mobilität' ? `<span class="cell-icon tint-purple">${ICON.sparkle}</span>` : `<span class="cell-icon tint-red">${ICON.heart}</span>`;
+
 function volTile(s) {
   if (volume(s) > 0) return `<div class="tile"><span class="tile-label">Volumen</span><span class="tile-value tint-orange">${(volume(s) / 1000).toFixed(1).replace('.', ',')}<small> t</small></span></div>`;
   const reps = s.exercises.reduce((n, e) => n + (ex(e.exId)?.unit === 'Wdh' ? e.sets.reduce((m, x) => m + x.r, 0) : 0), 0);
@@ -268,7 +276,7 @@ function volTile(s) {
 
 function cardioCell(s) {
   const fb = s.fitness && fitnessById(s.fitness.id);
-  return fb ? `<div class="cell"><span class="cell-icon tint-red">${ICON.heart}</span><div class="grow"><div class="body">Fitness: ${esc(fb.name)}</div>
+  return fb ? `<div class="cell">${fbIcon(fb)}<div class="grow"><div class="body">${fb.kind === 'Mobilität' ? 'Mobilität' : 'Fitness'}: ${esc(fb.name)}</div>
     <div class="sub">${s.fitness.value != null ? `${fmtKg(s.fitness.value)} ${esc(fb.value)}` : 'erledigt'}</div></div></div>` : '';
 }
 
@@ -374,6 +382,7 @@ function viewPlan() {
         <div class="sub next-up">${slot.ladder
           ? (lv < lvMax ? `${ICON.up} Stufe ${lv + 1} von ${lvMax + 1} · nächste Stufe: ${esc(ex(nextId).name)}` : `${ICON.trophy} Höchste Stufe erreicht`)
           : `${ICON.repeat} ${wu === 1 ? 'Nächste Woche' : `In ${wu} Wochen`}: ${esc(ex(nextId).name)}`}</div>
+        ${slot.mobility ? `<div class="sub next-up"><span class="tint-purple">${ICON.sparkle}</span> In der Satzpause: ${esc(exInfo(slot.mobility.id).name)} (${esc(slot.mobility.dose)})</div>` : ''}
         <details class="variants" ${route.params.open === slot.id ? 'open' : ''} data-slot="${slot.id}"><summary>Varianten (${nOn} von ${slot.options.length} aktiv)</summary>${variants}</details>
       </div></div>`;
   }).join('');
@@ -678,10 +687,10 @@ function openFitness(id) {
   const fb = fitnessById(id); if (!fb) return;
   $('#sheet-body').innerHTML = `
     <div class="grabber"></div>
-    <div class="sheet-nav"><span></span><div class="headline">Fitness-Block</div><button class="btn-link strong" data-action="close-sheet">Fertig</button></div>
+    <div class="sheet-nav"><span></span><div class="headline">${fb.kind === 'Mobilität' ? 'Mobilitäts-Flow' : 'Fitness-Block'}</div><button class="btn-link strong" data-action="close-sheet">Fertig</button></div>
     <div class="title2 center">${esc(fb.name)}</div>
-    <p class="sub center">${esc(fb.kind)} · ca. 12 Min.</p>
-    ${section('Ablauf', list(`<div class="cell"><span class="cell-icon tint-red">${ICON.heart}</span><div class="grow body">${esc(fb.detail)}</div></div>`))}
+    <p class="sub center">${esc(fb.kind)} · ca. ${fb.minutes || 12} Min.</p>
+    ${section('Ablauf', list(`<div class="cell">${fbIcon(fb)}<div class="grow body">${esc(fb.detail)}</div></div>`))}
     ${section(`Die ${fb.items.length} Übungen`, list(fb.items.map((it, k) => {
       const d = FIG.def(it.id);
       return `<button class="cell cell-link fit-item" data-action="howto" data-ex="${it.id}" data-back="${fb.id}">
@@ -696,7 +705,7 @@ function openFitness(id) {
 function openHowto(exId, backTo) {
   const E = exInfo(exId); const d = FIG.def(exId);
   const yt = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(E.name.replace(/[()]/g, '') + ' Übung Ausführung');
-  const typ = { free: 'Freihantel', machine: 'Geführte Maschine', cable: 'Kabelzug', cardio: 'Cardio-Gerät' }[E.type] || '';
+  const typ = { free: 'Freihantel', machine: 'Geführte Maschine', cable: 'Kabelzug', cardio: 'Cardio-Gerät', bw: 'Körpergewicht', mob: 'Mobilität · Matte' }[E.type] || '';
   $('#sheet-body').innerHTML = `
     <div class="grabber"></div>
     <div class="sheet-nav">${backTo ? `<button class="btn-link sheet-back" data-action="fitness" data-id="${backTo}">‹ Zurück</button>` : '<span></span>'}<div class="headline">Anleitung</div><button class="btn-link strong" data-action="close-sheet">Fertig</button></div>

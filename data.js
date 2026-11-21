@@ -301,26 +301,26 @@ Object.assign(EXERCISES, {
 Object.assign(WORKOUTS, {
   HA: {
     name: 'Zuhause A', home: true,
-    focus: 'Beine · Liegestütze · Rücken · Po · Schultern · Rumpf',
+    focus: 'Kraft & Mobilität · Beine, Brust, Rücken, Po, Schultern, Rumpf',
     slots: [
-      { id: 'HA1', label: 'Beine – Kniebeuge', ladder: true, options: ['squat_bw', 'squat_pause', 'split_squat', 'jump_squat'] },
-      { id: 'HA2', label: 'Brust – Liegestütze', ladder: true, options: ['pushup_knee', 'pushup', 'pushup_tempo', 'pushup_diamond'] },
-      { id: 'HA3', label: 'Rücken (Bauchlage)', options: ['superman_pull', 'ytw', 'snow_angel'] },
-      { id: 'HA4', label: 'Po', ladder: true, options: ['glute_bridge', 'bridge_sl', 'bridge_sl_hold'] },
-      { id: 'HA5', label: 'Schultern', options: ['pike_pushup', 'shoulder_taps'] },
-      { id: 'HA6', label: 'Rumpf', options: ['plank', 'dead_bug', 'hollow_hold'] },
+      { id: 'HA1', label: 'Beine – Kniebeuge', ladder: true, mobility: { id: 'deep_squat', dose: '30 Sek. halten' }, options: ['squat_bw', 'squat_pause', 'split_squat', 'jump_squat'] },
+      { id: 'HA2', label: 'Brust – Liegestütze', ladder: true, mobility: { id: 't_spine', dose: '5 je Seite' }, options: ['pushup_knee', 'pushup', 'pushup_tempo', 'pushup_diamond'] },
+      { id: 'HA3', label: 'Rücken (Bauchlage)', mobility: { id: 'childs_pose', dose: '30 Sek.' }, options: ['superman_pull', 'ytw', 'snow_angel'] },
+      { id: 'HA4', label: 'Po', ladder: true, mobility: { id: 'hip_flexor', dose: '30 Sek. je Seite' }, options: ['glute_bridge', 'bridge_sl', 'bridge_sl_hold'] },
+      { id: 'HA5', label: 'Schultern', mobility: { id: 'down_dog', dose: '30 Sek.' }, options: ['pike_pushup', 'shoulder_taps'] },
+      { id: 'HA6', label: 'Rumpf', mobility: { id: 'cat_cow', dose: '8 ×' }, options: ['plank', 'dead_bug', 'hollow_hold'] },
     ],
   },
   HB: {
     name: 'Zuhause B', home: true,
-    focus: 'Beine einbeinig · Liegestütze · Rücken · Beinbeuger · Waden · Rumpf',
+    focus: 'Kraft & Mobilität · Beine einbeinig, Brust, Rücken, Beinbeuger, Rumpf',
     slots: [
-      { id: 'HB1', label: 'Beine – Ausfallschritte', ladder: true, options: ['reverse_lunge', 'split_squat', 'jump_lunge'] },
-      { id: 'HB2', label: 'Brust/Trizeps – Liegestütze', ladder: true, options: ['pushup_knee', 'pushup', 'pushup_diamond'] },
-      { id: 'HB3', label: 'Rücken (Bauchlage)', options: ['ytw', 'snow_angel', 'superman_pull'] },
-      { id: 'HB4', label: 'Beinbeuger & Po', ladder: true, options: ['good_morning', 'sl_rdl'] },
-      { id: 'HB5', label: 'Beine seitlich / Waden', options: ['lateral_lunge', 'calf_bw'] },
-      { id: 'HB6', label: 'Rumpf', options: ['side_plank', 'bird_dog', 'sphinx'] },
+      { id: 'HB1', label: 'Beine – Ausfallschritte', ladder: true, mobility: { id: 'ankle_rock', dose: '10 je Seite' }, options: ['reverse_lunge', 'split_squat', 'jump_lunge'] },
+      { id: 'HB2', label: 'Brust/Trizeps – Liegestütze', ladder: true, mobility: { id: 'cobra', dose: '5 × 3 Sek.' }, options: ['pushup_knee', 'pushup', 'pushup_diamond'] },
+      { id: 'HB3', label: 'Rücken (Bauchlage)', mobility: { id: 't_spine', dose: '5 je Seite' }, options: ['ytw', 'snow_angel', 'superman_pull'] },
+      { id: 'HB4', label: 'Beinbeuger & Po', ladder: true, mobility: { id: 'fwd_fold', dose: '30 Sek.' }, options: ['good_morning', 'sl_rdl'] },
+      { id: 'HB5', label: 'Beine seitlich / Waden', mobility: { id: 'hip_9090', dose: '8 Wechsel' }, options: ['lateral_lunge', 'calf_bw'] },
+      { id: 'HB6', label: 'Rumpf', mobility: { id: 'pigeon', dose: '30 Sek. je Seite' }, options: ['side_plank', 'bird_dog', 'sphinx'] },
     ],
   },
 });
@@ -337,6 +337,40 @@ Object.assign(FIT_EX, {
 });
 
 // Fitness-Block zuhause (ca. 12–15 Min.) – nur Körpergewicht
+// Mobilitäts-Übungen (Matte, ohne Hilfsmittel)
+Object.assign(FIT_EX, {
+  cat_cow:     { name: 'Katze-Kuh', type: 'mob', tip: 'Langsam im Atemrhythmus: ausatmen = Rücken rund, einatmen = Brust nach vorne.' },
+  wgs:         { name: "World's Greatest Stretch", type: 'mob', tip: 'Tiefer Ausfallschritt, Hand innen neben den Fuß, dann den anderen Arm zur Decke drehen.' },
+  hip_flexor:  { name: 'Hüftbeuger-Dehnung kniend', type: 'mob', tip: 'Hinteres Knie auf der Matte, Po anspannen und Hüfte nach vorne schieben.' },
+  t_spine:     { name: 'Thread the Needle (Brustwirbelsäule)', type: 'mob', tip: 'Vierfüßlerstand, einen Arm zur Decke aufdrehen, dann unter dem Körper durchfädeln.' },
+  down_dog:    { name: 'Herabschauender Hund', type: 'mob', tip: 'Po hoch, Rücken lang, Fersen abwechselnd Richtung Boden drücken.' },
+  childs_pose: { name: 'Kindhaltung', type: 'mob', tip: 'Po zu den Fersen, Arme lang nach vorne, ruhig in den Rücken atmen.' },
+  deep_squat:  { name: 'Tiefe Hocke halten', type: 'mob', tip: 'So tief wie möglich, Fersen am Boden, Ellbogen schieben die Knie sanft nach außen.' },
+  fwd_fold:    { name: 'Vorbeuge im Sitzen', type: 'mob', tip: 'Beine gestreckt, mit langem Rücken aus der Hüfte nach vorne neigen.' },
+  cobra:       { name: 'Kobra', type: 'mob', tip: 'Bauchlage, Hände unter den Schultern, Brust sanft anheben, Becken bleibt am Boden.' },
+  pigeon:      { name: 'Taube (Hüftöffner)', type: 'mob', tip: 'Vorderes Bein angewinkelt vor dem Körper, hinteres Bein lang, Oberkörper sinkt nach vorne.' },
+  arm_circles: { name: 'Große Armkreise', type: 'mob', tip: 'Gestreckte Arme, große langsame Kreise vor und zurück.' },
+  hip_9090:    { name: '90/90 Hüftwechsel', type: 'mob', tip: 'Im Sitzen beide Knie 90° gebeugt, Knie langsam von einer Seite zur anderen kippen.' },
+  ankle_rock:  { name: 'Sprunggelenk-Mobilisation', type: 'mob', tip: 'Halber Kniestand, vorderes Knie langsam über die Zehen schieben, Ferse bleibt unten.' },
+});
+
+// Zuhause = Kraft & Mobilität: Abschluss mit Mobilitäts-Flow (ca. 15 Min., wechselt jedes Mal)
+const MOBILITY_HOME = [
+  { id: 'm_hips', kind: 'Mobilität', name: 'Hüft-Flow', value: 'Minuten', minutes: 15,
+    detail: '2 Durchgänge, ruhig atmen, nichts erzwingen – Dehnung ja, Schmerz nein.',
+    items: [{ id: 'hip_9090', dose: '1 Min.' }, { id: 'hip_flexor', dose: '45 Sek. je Seite' }, { id: 'pigeon', dose: '45 Sek. je Seite' }, { id: 'deep_squat', dose: '1 Min.' }] },
+  { id: 'm_spine', kind: 'Mobilität', name: 'Rücken & Schultern', value: 'Minuten', minutes: 15,
+    detail: '2 Durchgänge, langsam und kontrolliert.',
+    items: [{ id: 'cat_cow', dose: '1 Min.' }, { id: 't_spine', dose: '6 je Seite' }, { id: 'arm_circles', dose: '10 vor / 10 zurück' }, { id: 'cobra', dose: '5 × 5 Sek.' }, { id: 'childs_pose', dose: '1 Min.' }] },
+  { id: 'm_yoga', kind: 'Mobilität', name: 'Yoga-Flow', value: 'Runden', minutes: 15,
+    detail: '4–5 Runden fließend hintereinander, jede Position 3 tiefe Atemzüge.',
+    items: [{ id: 'down_dog', dose: '3 Atemzüge' }, { id: 'wgs', dose: '3 Atemzüge je Seite' }, { id: 'cobra', dose: '3 Atemzüge' }, { id: 'childs_pose', dose: '3 Atemzüge' }] },
+  { id: 'm_legs', kind: 'Mobilität', name: 'Beine & Rückseite', value: 'Minuten', minutes: 15,
+    detail: '2 Durchgänge, Dehnungen sanft halten.',
+    items: [{ id: 'ankle_rock', dose: '10 je Seite' }, { id: 'fwd_fold', dose: '1 Min.' }, { id: 'hip_flexor', dose: '45 Sek. je Seite' }, { id: 'down_dog', dose: '45 Sek.' }] },
+];
+
+// ältere Zuhause-Fitnessblöcke (nur für Verlaufseinträge)
 const FITNESS_HOME = [
   { id: 'h_circuit', kind: 'Zirkel', name: 'Körpergewicht-Zirkel', value: 'Runden',
     detail: '4 Runden: je 40 Sek. Arbeit, 20 Sek. Pause. Nach jeder Runde 1 Min. Pause.',
@@ -355,10 +389,12 @@ const FITNESS_HOME = [
     items: [{ id: 'plank_fit', dose: '45 Sek.' }, { id: 'jumping_jack', dose: '45 Sek.' }, { id: 'lunge_fit', dose: '45 Sek.' }, { id: 'mountain_climber', dose: '45 Sek.' }] },
 ];
 
+// Mobilitäts-Warm-up zuhause (ca. 8 Min.)
 const WARMUP_HOME = [
-  '2 Min. Hampelmann oder auf der Stelle laufen',
-  'Armkreisen vor und zurück, je 10×',
-  'Hüftkreisen und Ausfallschritt mit Rotation, je 5 pro Seite',
-  '10 langsame Kniebeugen und 5 Liegestütze auf Knien',
-  'Katze-Kuh im Vierfüßlerstand, 8×',
+  { id: 'jumping_jack', dose: '1 Min. locker' },
+  { id: 'cat_cow', dose: '8 ×' },
+  { id: 'wgs', dose: '5 je Seite' },
+  { id: 'hip_9090', dose: '8 Wechsel' },
+  { id: 'arm_circles', dose: '10 vor / 10 zurück' },
+  { id: 'squat_fit', dose: '10 langsam' },
 ];

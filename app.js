@@ -225,8 +225,8 @@ function startWorkout(w) {
 }
 
 const FITNESS_ACTIVE = FITNESS.filter((f) => !f.legacy);
-function fitnessFor(n, home = false) { const L = home ? FITNESS_HOME : FITNESS_ACTIVE; return L[n % L.length]; }
-const fitnessById = (id) => FITNESS.find((c) => c.id === id) || FITNESS_HOME.find((c) => c.id === id);
+function fitnessFor(n, home = false) { const L = home ? MOBILITY_HOME : FITNESS_ACTIVE; return L[n % L.length]; }
+const fitnessById = (id) => FITNESS.find((c) => c.id === id) || MOBILITY_HOME.find((c) => c.id === id) || FITNESS_HOME.find((c) => c.id === id);
 // letzter eingetragener Wert eines Fitness-Blocks (zum Steigern)
 function lastFitnessValue(id) {
   for (let i = state.sessions.length - 1; i >= 0; i--) {
@@ -262,7 +262,7 @@ function finishWorkout() {
   const cur = state.current; if (!cur) return;
   cur.exercises.forEach((e) => { e.sets = e.sets.filter((s) => s.done); });
   const done = cur.exercises.filter((e) => e.sets.length);
-  if (!done.length) { if (confirm('Keine Sätze abgehakt. Training verwerfen?')) { state.current = null; save(); stopRest(); go('home'); } return; }
+  if (!done.length && !cur.fitness?.done) { if (confirm('Nichts abgehakt. Training verwerfen?')) { state.current = null; save(); stopRest(); go('home'); } return; }
 
   // Bestleistungen ermitteln, bevor die Session gespeichert wird
   const prs = [];

@@ -12,8 +12,9 @@ Muskelaufbau **und** Fitness in 2× 60 Min. pro Woche:
 - **Rumpfstabilität**: Pallof Press, Holzhacker, Farmer's Walk
 
 ## Zuhause-Training
-Wenn du es nicht ins Studio schaffst: **Zuhause A und B**, nur Körpergewicht und Yogamatte, ca. 60 Min.
-(Aufwärmen, Kraft, Fitness-Block). Steigerung über Stufen: Schaffst du in allen Sätzen das obere Ende
+Wenn du es nicht ins Studio schaffst: **Zuhause A und B – Kraft & Mobilität**, nur Körpergewicht und Yogamatte, ca. 60 Min.:
+Mobilitäts-Warm-up, Kraftübungen mit passender Mobilitätsübung in jeder Satzpause und ein Mobilitäts-Flow zum Abschluss
+(Hüfte, Rücken & Schultern, Yoga-Flow, Beinrückseite – wechselt jedes Mal). Steigerung über Stufen: Schaffst du in allen Sätzen das obere Ende
 des Wiederholungsbereichs, kommt die schwierigere Variante (z. B. Liegestütze auf Knien → Liegestütze →
 langsame Liegestütze → Diamant-Liegestütze).
 
